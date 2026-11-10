@@ -83,6 +83,15 @@
             background-color: #ffffff;
             color: #0f172a;
         }
+        
+        /* Hide scrollbar for horizontal scrolling tabs on mobile */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 <body class="antialiased relative min-h-screen">
@@ -106,13 +115,13 @@
     </div>
 
     <!-- แถบเมนู (Tabs) -->
-    <div class="relative z-10 mb-8 mt-6">
+    <div class="relative z-10 mb-6 sm:mb-8 mt-4 sm:mt-6">
         <div class="max-w-6xl mx-auto px-4">
-            <div class="flex space-x-8 border-b border-slate-200">
-                <button id="tab-register" onclick="window.switchTab('register')" class="py-4 px-4 tab-active text-lg flex items-center transition-all">
+            <div class="flex space-x-4 sm:space-x-8 border-b border-slate-200 overflow-x-auto hide-scrollbar">
+                <button id="tab-register" onclick="window.switchTab('register')" class="py-3 sm:py-4 px-2 sm:px-4 tab-active text-base sm:text-lg flex items-center transition-all whitespace-nowrap">
                     <span class="mr-2">📝</span> แบบฟอร์มลงทะเบียน
                 </button>
-                <button id="tab-admin" onclick="window.switchTab('admin')" class="py-4 px-4 tab-inactive text-lg flex items-center transition-all">
+                <button id="tab-admin" onclick="window.switchTab('admin')" class="py-3 sm:py-4 px-2 sm:px-4 tab-inactive text-base sm:text-lg flex items-center transition-all whitespace-nowrap">
                     <span class="mr-2 opacity-80">📊</span> ตรวจสอบการลงทะเบียน
                 </button>
             </div>
@@ -120,30 +129,30 @@
     </div>
 
     <!-- ส่วนที่ 1: หน้าลงทะเบียน -->
-    <div id="view-register" class="max-w-5xl mx-auto px-4 pb-12 block relative z-10">
-        <div class="glass-panel rounded-3xl p-8 md:p-10">
+    <div id="view-register" class="max-w-5xl mx-auto px-3 sm:px-4 pb-12 block relative z-10">
+        <div class="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10">
             
-            <div class="text-center mb-10">
-                <div class="flex justify-center mb-6">
-                    <img src="https://i.postimg.cc/f33BmWSr/logo.png" alt="Transplant Logo" class="h-20 md:h-24 w-auto object-contain drop-shadow-sm">
+            <div class="text-center mb-8 sm:mb-10">
+                <div class="flex justify-center mb-4 sm:mb-6">
+                    <img src="https://i.postimg.cc/f33BmWSr/logo.png" alt="Transplant Logo" class="h-16 md:h-24 w-auto object-contain drop-shadow-sm">
                 </div>
-                <h1 class="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent drop-shadow-sm">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent drop-shadow-sm leading-tight">
                     ลงทะเบียนเข้าร่วมการประชุม
                 </h1>
-                <h2 class="text-xl text-slate-500 font-semibold mb-6 tracking-wide">Transplant Team Learning Series</h2>
+                <h2 class="text-base sm:text-xl text-slate-500 font-semibold mb-6 tracking-wide">Transplant Team Learning Series</h2>
                 
                 <!-- กล่องข้อมูลสถานที่และเวลา -->
-                <div class="inline-block bg-white/60 border border-cyan-200 rounded-2xl px-6 py-4 text-slate-700 shadow-sm">
-                    <div class="flex flex-col md:flex-row md:items-center justify-center gap-4 md:gap-8">
-                        <p class="flex items-center text-lg">
-                            <span class="text-cyan-500 text-2xl mr-3 drop-shadow-sm">📍</span> 
-                            <span>ณ ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า</span>
+                <div class="inline-block w-full sm:w-auto bg-white/70 border border-cyan-200 rounded-2xl px-4 sm:px-6 py-4 text-slate-700 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center justify-center gap-3 sm:gap-4 md:gap-8 text-left sm:text-center">
+                        <p class="flex items-center text-sm sm:text-lg">
+                            <span class="text-cyan-500 text-xl sm:text-2xl mr-3 drop-shadow-sm">📍</span> 
+                            <span>ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า</span>
                         </p>
                         <div class="hidden md:block w-px h-10 bg-slate-300"></div>
-                        <p class="flex items-center text-lg text-left">
-                            <span class="text-cyan-500 text-2xl mr-3 drop-shadow-sm">⏰</span> 
+                        <p class="flex items-center text-sm sm:text-lg">
+                            <span class="text-cyan-500 text-xl sm:text-2xl mr-3 drop-shadow-sm">⏰</span> 
                             <span>เวลา 11.00 - 13.00 น.<br>
-                                <span class="text-emerald-600 font-medium text-sm">(พร้อมรับประทานอาหารกลางวัน)</span>
+                                <span class="text-emerald-600 font-medium text-xs sm:text-sm">(พร้อมรับประทานอาหารกลางวัน)</span>
                             </span>
                         </p>
                     </div>
@@ -154,22 +163,22 @@
                 
                 <!-- ข้อมูลส่วนตัว -->
                 <div class="mb-10">
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center border-b border-slate-100 pb-3">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 flex items-center border-b border-slate-100 pb-3">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-100 to-blue-100 border border-cyan-200 flex items-center justify-center mr-3 shadow-sm">
                             <span class="text-sm">👤</span>
                         </div>
                         ข้อมูลส่วนบุคคล
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                         <div class="space-y-1.5">
                             <label class="block text-sm font-medium text-slate-700">ชื่อ-นามสกุล <span class="text-rose-500">*</span></label>
-                            <input type="text" id="fullName" required class="w-full glass-input rounded-xl px-4 py-3">
+                            <input type="text" id="fullName" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 text-base">
                         </div>
                         
                         <div class="space-y-1.5">
                             <label class="block text-sm font-medium text-slate-700">ตำแหน่ง/วิชาชีพ <span class="text-rose-500">*</span></label>
-                            <select id="profession" onchange="window.toggleOtherProfession()" required class="w-full glass-input rounded-xl px-4 py-3 appearance-none mb-2">
+                            <select id="profession" onchange="window.toggleOtherProfession()" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 appearance-none mb-2 text-base">
                                 <option value="" disabled selected>-- เลือกตำแหน่ง/วิชาชีพ --</option>
                                 <option value="แพทย์">แพทย์</option>
                                 <option value="พยาบาล">พยาบาล</option>
@@ -177,91 +186,91 @@
                                 <option value="วิสัญญี">วิสัญญี</option>
                                 <option value="อื่นๆ">อื่นๆ (โปรดระบุ)</option>
                             </select>
-                            <input type="text" id="professionOther" placeholder="โปรดระบุตำแหน่งของคุณ..." class="w-full glass-input rounded-xl px-4 py-3 hidden">
+                            <input type="text" id="professionOther" placeholder="โปรดระบุตำแหน่งของคุณ..." class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 hidden text-base">
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="block text-sm font-medium text-slate-700">หน่วยงาน <span class="text-rose-500">*</span></label>
-                            <input type="text" id="department" required class="w-full glass-input rounded-xl px-4 py-3">
+                            <input type="text" id="department" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 text-base">
                         </div>
                         
                         <div class="space-y-1.5">
                             <label class="block text-sm font-medium text-slate-700">เบอร์โทรศัพท์ติดต่อ <span class="text-rose-500">*</span></label>
-                            <input type="tel" id="phone" required class="w-full glass-input rounded-xl px-4 py-3">
+                            <input type="tel" id="phone" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 text-base">
                         </div>
                     </div>
                 </div>
 
                 <!-- เลือกวันที่เข้าร่วม -->
-                <div class="mb-10">
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="mb-8 sm:mb-10">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
                         <div class="flex items-center">
                             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 border border-purple-200 flex items-center justify-center mr-3 shadow-sm">
                                 <span class="text-sm">📅</span>
                             </div>
                             เลือกหัวข้อและวันที่เข้าร่วม
                         </div>
-                        <span class="text-sm font-normal text-cyan-700 bg-cyan-50 px-3 py-1 rounded-full border border-cyan-200">เลือกได้มากกว่า 1 วัน</span>
+                        <span class="text-xs sm:text-sm font-medium text-cyan-700 bg-cyan-50 px-3 py-1.5 rounded-full border border-cyan-200 inline-block w-max self-start sm:self-auto">สามารถเลือกได้มากกว่า 1 วัน</span>
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
                         
                         <!-- กล่อง 1: Kidney Transplant -->
-                        <div class="group bg-white/60 border border-slate-200 rounded-2xl p-6 transition-all duration-300 hover:bg-white hover:border-cyan-400/50 hover:shadow-md relative overflow-hidden">
+                        <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-cyan-400/50 hover:shadow-md relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
-                            <h4 class="text-lg font-bold text-cyan-700 text-center mb-5 tracking-wide">Kidney Transplant</h4>
-                            <div class="space-y-4">
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="kidney" value="8 มกราคม 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
-                                    <span class="text-slate-700">8 มกราคม 2570</span>
+                            <h4 class="text-base sm:text-lg font-bold text-cyan-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Kidney Transplant</h4>
+                            <div class="space-y-3 sm:space-y-4">
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="kidney" value="8 มกราคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">8 มกราคม 2570</span>
                                 </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="kidney" value="16 เมษายน 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
-                                    <span class="text-slate-700">16 เมษายน 2570</span>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="kidney" value="16 เมษายน 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">16 เมษายน 2570</span>
                                 </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="kidney" value="9 กรกฎาคม 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
-                                    <span class="text-slate-700">9 กรกฎาคม 2570</span>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="kidney" value="9 กรกฎาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">9 กรกฎาคม 2570</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- กล่อง 2: Organ Donor -->
-                        <div class="group bg-white/60 border border-slate-200 rounded-2xl p-6 transition-all duration-300 hover:bg-white hover:border-pink-400/50 hover:shadow-md relative overflow-hidden">
+                        <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-pink-400/50 hover:shadow-md relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 to-rose-500 opacity-80"></div>
-                            <h4 class="text-lg font-bold text-pink-700 text-center mb-5 tracking-wide">Organ Donor</h4>
-                            <div class="space-y-4">
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="organ" value="11 ธันวาคม 2569" class="w-5 h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
-                                    <span class="text-slate-700">11 ธันวาคม 2569</span>
+                            <h4 class="text-base sm:text-lg font-bold text-pink-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Organ Donor</h4>
+                            <div class="space-y-3 sm:space-y-4">
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="organ" value="11 ธันวาคม 2569" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">11 ธันวาคม 2569</span>
                                 </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="organ" value="12 มีนาคม 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
-                                    <span class="text-slate-700">12 มีนาคม 2570</span>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="organ" value="12 มีนาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">12 มีนาคม 2570</span>
                                 </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="organ" value="11 มิถุนายน 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
-                                    <span class="text-slate-700">11 มิถุนายน 2570</span>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="organ" value="11 มิถุนายน 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">11 มิถุนายน 2570</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- กล่อง 3: Heart Transplant -->
-                        <div class="group bg-white/60 border border-slate-200 rounded-2xl p-6 transition-all duration-300 hover:bg-white hover:border-emerald-400/50 hover:shadow-md relative overflow-hidden">
+                        <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-emerald-400/50 hover:shadow-md relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-80"></div>
-                            <h4 class="text-lg font-bold text-emerald-700 text-center mb-5 tracking-wide">Heart Transplant</h4>
-                            <div class="space-y-4">
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="heart" value="19 กุมภาพันธ์ 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
-                                    <span class="text-slate-700">19 กุมภาพันธ์ 2570</span>
+                            <h4 class="text-base sm:text-lg font-bold text-emerald-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Heart Transplant</h4>
+                            <div class="space-y-3 sm:space-y-4">
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="heart" value="19 กุมภาพันธ์ 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">19 กุมภาพันธ์ 2570</span>
                                 </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="heart" value="21 พฤษภาคม 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
-                                    <span class="text-slate-700">21 พฤษภาคม 2570</span>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="heart" value="21 พฤษภาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">21 พฤษภาคม 2570</span>
                                 </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-                                    <input type="checkbox" name="heart" value="13 สิงหาคม 2570" class="w-5 h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
-                                    <span class="text-slate-700">13 สิงหาคม 2570</span>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
+                                    <input type="checkbox" name="heart" value="13 สิงหาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
+                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">13 สิงหาคม 2570</span>
                                 </label>
                             </div>
                         </div>
@@ -269,10 +278,10 @@
                     </div>
                 </div>
 
-                <div class="text-center mt-12 relative group inline-block w-full">
+                <div class="text-center mt-8 sm:mt-12 relative group block w-full">
                     <!-- Glow effect behind button -->
-                    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500 group-hover:duration-200 w-2/3 mx-auto"></div>
-                    <button type="submit" class="relative bg-gradient-to-r from-cyan-600 to-blue-600 border border-transparent text-white font-bold py-4 px-12 rounded-full shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] text-lg w-2/3 mx-auto flex items-center justify-center space-x-2" id="submitBtn">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500 group-hover:duration-200 w-full md:w-2/3 mx-auto"></div>
+                    <button type="submit" class="relative bg-gradient-to-r from-cyan-600 to-blue-600 border border-transparent text-white font-bold py-4 sm:py-4 px-6 sm:px-12 rounded-full shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] text-lg w-full md:w-2/3 mx-auto flex items-center justify-center space-x-2" id="submitBtn">
                         <span>ยืนยันการลงทะเบียน</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/80" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -284,18 +293,18 @@
     </div>
 
     <!-- ส่วนที่ 2: หน้าแอดมิน -->
-    <div id="view-admin" class="max-w-7xl mx-auto px-4 pb-12 hidden relative z-10">
-        <div class="glass-panel rounded-3xl p-8 md:p-10">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div id="view-admin" class="max-w-7xl mx-auto px-3 sm:px-4 pb-12 hidden relative z-10">
+        <div class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800 mb-1 flex items-center">
-                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse mr-3 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
-                        ระบบจัดการฐานข้อมูล (Real-time)
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1 flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse mr-2 sm:mr-3 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
+                        ระบบจัดการฐานข้อมูล
                     </h2>
-                    <p class="text-slate-500 text-sm ml-6">ข้อมูลอัปเดตอัตโนมัติจาก Cloud Database</p>
+                    <p class="text-slate-500 text-xs sm:text-sm ml-5 sm:ml-6">อัปเดตอัตโนมัติแบบ Real-time</p>
                 </div>
                 
-                <button onclick="window.exportToExcel()" class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-2.5 px-6 rounded-xl shadow-sm flex items-center transition-all duration-300 hover:border-emerald-500 hover:text-emerald-700 group">
+                <button onclick="window.exportToExcel()" class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-3 sm:py-2.5 px-6 rounded-xl shadow-sm flex items-center justify-center transition-all duration-300 hover:border-emerald-500 hover:text-emerald-700 group">
                     <span class="mr-2 group-hover:scale-110 transition-transform">📊</span> 
                     <span class="font-medium">Export to Excel</span>
                 </button>
@@ -587,11 +596,15 @@
         window.switchTab = function(tabName) {
             document.getElementById('view-register').classList.add('hidden');
             document.getElementById('view-admin').classList.add('hidden');
-            document.getElementById('tab-register').className = 'py-4 px-4 tab-inactive text-lg flex items-center transition-all';
-            document.getElementById('tab-admin').className = 'py-4 px-4 tab-inactive text-lg flex items-center transition-all';
+            
+            const inactiveClass = 'py-3 sm:py-4 px-2 sm:px-4 tab-inactive text-base sm:text-lg flex items-center transition-all whitespace-nowrap';
+            const activeClass = 'py-3 sm:py-4 px-2 sm:px-4 tab-active text-base sm:text-lg flex items-center transition-all whitespace-nowrap';
+            
+            document.getElementById('tab-register').className = inactiveClass;
+            document.getElementById('tab-admin').className = inactiveClass;
             
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabName}`).className = 'py-4 px-4 tab-active text-lg flex items-center transition-all';
+            document.getElementById(`tab-${tabName}`).className = activeClass;
         }
 
         window.showModal = function(title, message, type = 'success', isConfirm = false) {
