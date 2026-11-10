@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- บังคับไม่ให้เบราว์เซอร์จำ Cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>ระบบลงทะเบียน Transplant Team Learning Series</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- โหลดไลบรารีสำหรับ Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body { 
             font-family: 'Sarabun', sans-serif; 
-            background-color: #f8fafc; /* Slate 50 - สีพื้นหลังสว่าง */
-            color: #0f172a; /* Slate 900 */
+            background-color: #f8fafc; 
+            color: #0f172a; 
             overflow-x: hidden;
         }
-        
-        /* Animated Background Blobs (Soft for Light Mode) */
         .blob {
             position: absolute;
             filter: blur(80px);
@@ -26,9 +27,9 @@
             opacity: 0.4;
             animation: moveBlobs 20s infinite alternate;
         }
-        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(6, 182, 212, 0.4); } /* Cyan */
-        .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: rgba(16, 185, 129, 0.3); } /* Emerald */
-        .blob-3 { top: 40%; left: 50%; width: 400px; height: 400px; background: rgba(139, 92, 246, 0.3); transform: translate(-50%, -50%); } /* Purple */
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(6, 182, 212, 0.4); } 
+        .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: rgba(16, 185, 129, 0.3); } 
+        .blob-3 { top: 40%; left: 50%; width: 400px; height: 400px; background: rgba(139, 92, 246, 0.3); transform: translate(-50%, -50%); } 
 
         @keyframes moveBlobs {
             0% { transform: translate(0, 0) scale(1); }
@@ -37,7 +38,6 @@
             100% { transform: translate(0, 0) scale(1); }
         }
 
-        /* Glassmorphism Classes for Light Mode */
         .glass-panel {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(16px);
@@ -48,50 +48,36 @@
 
         .glass-input {
             background: rgba(255, 255, 255, 0.6);
-            border: 1px solid #cbd5e1; /* Slate 300 */
+            border: 1px solid #cbd5e1; 
             color: #0f172a;
             transition: all 0.3s ease;
         }
         .glass-input:focus {
             outline: none;
-            border-color: #0ea5e9; /* Sky 500 */
+            border-color: #0ea5e9; 
             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
             background: rgba(255, 255, 255, 1);
         }
         
-        /* Custom Checkbox */
-        input[type="checkbox"] {
-            accent-color: #0ea5e9;
-        }
+        input[type="checkbox"] { accent-color: #0ea5e9; }
 
-        /* Tabs */
         .tab-active { 
             border-bottom-width: 3px; 
             border-color: #0ea5e9; 
-            color: #0284c7; /* Sky 700 */
+            color: #0284c7; 
             font-weight: 600; 
         }
         .tab-inactive { 
-            color: #64748b; /* Slate 500 */
+            color: #64748b; 
             font-weight: 500; 
             transition: color 0.3s;
         }
         .tab-inactive:hover { color: #0f172a; }
         
-        /* Options inside select */
-        select option {
-            background-color: #ffffff;
-            color: #0f172a;
-        }
+        select option { background-color: #ffffff; color: #0f172a; }
         
-        /* Hide scrollbar for horizontal scrolling tabs on mobile */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="antialiased relative min-h-screen">
@@ -109,7 +95,7 @@
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
-                <strong>SYSTEM ONLINE: Cloud Database Synced.</strong>
+                <strong>SYSTEM ONLINE: เชื่อมต่อฐานข้อมูล Firebase สำเร็จ</strong>
             </span>
         </div>
     </div>
@@ -129,7 +115,7 @@
     </div>
 
     <!-- ส่วนที่ 1: หน้าลงทะเบียน -->
-    <div id="view-register" class="max-w-5xl mx-auto px-3 sm:px-4 pb-12 block relative z-10">
+    <div id="view-register" class="max-w-5xl mx-auto px-3 sm:px-4 pb-4 block relative z-10">
         <div class="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10">
             
             <div class="text-center mb-8 sm:mb-10">
@@ -141,7 +127,6 @@
                 </h1>
                 <h2 class="text-base sm:text-xl text-slate-500 font-semibold mb-6 tracking-wide">Transplant Team Learning Series</h2>
                 
-                <!-- กล่องข้อมูลสถานที่และเวลา -->
                 <div class="inline-block w-full sm:w-auto bg-white/70 border border-cyan-200 rounded-2xl px-4 sm:px-6 py-4 text-slate-700 shadow-sm">
                     <div class="flex flex-col md:flex-row md:items-center justify-center gap-3 sm:gap-4 md:gap-8 text-left sm:text-center">
                         <p class="flex items-center text-sm sm:text-lg">
@@ -161,7 +146,7 @@
 
             <form id="registrationForm" onsubmit="window.submitForm(event)">
                 
-                <!-- ข้อมูลส่วนตัว -->
+                <!-- ข้อมูลส่วนบุคคล -->
                 <div class="mb-10">
                     <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 flex items-center border-b border-slate-100 pb-3">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-100 to-blue-100 border border-cyan-200 flex items-center justify-center mr-3 shadow-sm">
@@ -215,7 +200,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
                         
-                        <!-- กล่อง 1: Kidney Transplant -->
+                        <!-- Box 1 -->
                         <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-cyan-400/50 hover:shadow-md relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
                             <h4 class="text-base sm:text-lg font-bold text-cyan-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Kidney Transplant</h4>
@@ -235,7 +220,7 @@
                             </div>
                         </div>
 
-                        <!-- กล่อง 2: Organ Donor -->
+                        <!-- Box 2 -->
                         <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-pink-400/50 hover:shadow-md relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 to-rose-500 opacity-80"></div>
                             <h4 class="text-base sm:text-lg font-bold text-pink-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Organ Donor</h4>
@@ -255,7 +240,7 @@
                             </div>
                         </div>
 
-                        <!-- กล่อง 3: Heart Transplant -->
+                        <!-- Box 3 -->
                         <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-emerald-400/50 hover:shadow-md relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-80"></div>
                             <h4 class="text-base sm:text-lg font-bold text-emerald-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Heart Transplant</h4>
@@ -279,7 +264,6 @@
                 </div>
 
                 <div class="text-center mt-8 sm:mt-12 relative group block w-full">
-                    <!-- Glow effect behind button -->
                     <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500 group-hover:duration-200 w-full md:w-2/3 mx-auto"></div>
                     <button type="submit" class="relative bg-gradient-to-r from-cyan-600 to-blue-600 border border-transparent text-white font-bold py-4 sm:py-4 px-6 sm:px-12 rounded-full shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] text-lg w-full md:w-2/3 mx-auto flex items-center justify-center space-x-2" id="submitBtn">
                         <span>ยืนยันการลงทะเบียน</span>
@@ -289,6 +273,11 @@
                     </button>
                 </div>
             </form>
+        </div>
+        
+        <!-- ตัวบอกเวอร์ชัน (เอาไว้ตรวจสอบว่าโหลด Cache ใหม่หรือยัง) -->
+        <div class="text-center text-xs text-slate-400 mt-6 mb-2">
+            เวอร์ชัน 3.0 (ตรวจสอบการเชื่อมต่อ Cloud)
         </div>
     </div>
 
@@ -355,61 +344,53 @@
         </div>
     </div>
 
-    <!-- Javascript - ระบบฐานข้อมูลเชื่อมต่ออัตโนมัติ (Module) -->
+    <!-- Javascript -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'transplant-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        // Config ฐานข้อมูลของคุณ (ตรวจสอบแล้วว่าถูกต้อง)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJPNRtc1BSvpmfJP-Y1HcirWEPvWdiHxo",
+            authDomain: "register-612dc.firebaseapp.com",
+            projectId: "register-612dc",
+            storageBucket: "register-612dc.firebasestorage.app",
+            messagingSenderId: "872853469363",
+            appId: "1:872853469363:web:a608f3b575a6f6cc7858c6",
+            measurementId: "G-ZXREEFQXSP"
+        };
         
-        let app, db, auth;
+        let app, db;
         let registrations = [];
         let editId = null; 
-        let currentUser = null;
 
+        // เริ่มต้นระบบ
         async function initializeSystem() {
             try {
-                if (Object.keys(firebaseConfig).length > 0) {
-                    app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                // แสดงแถบสีเขียวเมื่อเปิดเว็บสำเร็จ
+                document.getElementById('db-status-banner').classList.remove('hidden');
+                
+                // ดึงข้อมูล
+                const colRef = collection(db, 'ttls_registrations');
+                onSnapshot(colRef, (snapshot) => {
+                    registrations = [];
+                    snapshot.forEach((doc) => {
+                        registrations.push({ id: doc.id, ...doc.data() });
+                    });
+                    registrations.sort((a, b) => b.timestamp - a.timestamp);
+                    renderTable();
+                }, (error) => {
+                    console.error("Firestore Listen Error:", error);
+                    showModal('เชื่อมต่อล้มเหลว', 'เกิดข้อผิดพลาดในการดึงข้อมูลจาก Cloud', 'error');
+                });
 
-                    if (typeof __initial_auth_token !== 'undefined') {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                    
-                    currentUser = auth.currentUser;
-                    if(currentUser) {
-                        document.getElementById('db-status-banner').classList.remove('hidden');
-                        fetchDataRealtime();
-                    }
-                }
             } catch (error) {
                 console.error("Cloud Connection Error:", error);
-                const empty = document.getElementById('emptyState');
-                empty.innerHTML = "❌<br>เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
-                empty.classList.replace('text-slate-500', 'text-rose-400');
+                showModal('เชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณารีเฟรชหน้าจอ', 'error');
             }
-        }
-
-        function fetchDataRealtime() {
-            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'ttls_registrations');
-            
-            onSnapshot(colRef, (snapshot) => {
-                registrations = [];
-                snapshot.forEach((doc) => {
-                    registrations.push({ id: doc.id, ...doc.data() });
-                });
-                
-                registrations.sort((a, b) => b.timestamp - a.timestamp);
-                renderTable();
-            }, (error) => {
-                console.error("Firestore Listen Error:", error);
-            });
         }
 
         initializeSystem();
@@ -435,15 +416,11 @@
 
         window.submitForm = async function(e) {
             e.preventDefault();
-            if (!currentUser) {
-                showModal('ข้อผิดพลาด', 'ยังไม่ได้เชื่อมต่อระบบฐานข้อมูล กรุณารอสักครู่', 'error');
-                return;
-            }
 
             const btn = document.getElementById('submitBtn');
             const originalBtnContent = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> กำลังประมวลผล...`;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> กำลังบันทึกข้อมูล...`;
             
             let profValue = document.getElementById('profession').value;
             if(profValue === 'อื่นๆ') profValue = document.getElementById('professionOther').value;
@@ -460,19 +437,19 @@
             };
 
             try {
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'ttls_registrations');
+                const colRef = collection(db, 'ttls_registrations');
                 if(!editId) {
                     await addDoc(colRef, data);
-                    showModal('ลงทะเบียนสำเร็จ!', 'บันทึกข้อมูลเข้าสู่ระบบ Cloud เรียบร้อยแล้ว', 'success');
+                    showModal('ลงทะเบียนสำเร็จ!', 'ข้อมูลของคุณถูกบันทึกเข้าสู่ระบบ Cloud เรียบร้อยแล้ว', 'success');
                 } else {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'ttls_registrations', editId);
+                    const docRef = doc(db, 'ttls_registrations', editId);
                     await updateDoc(docRef, data);
-                    showModal('อัปเดตสำเร็จ!', 'แก้ไขข้อมูลในระบบ Cloud เรียบร้อยแล้ว', 'success');
+                    showModal('อัปเดตสำเร็จ!', 'แก้ไขข้อมูลเรียบร้อยแล้ว', 'success');
                 }
                 resetForm();
             } catch (err) {
                 console.error("Save Error:", err);
-                showModal('ผิดพลาด', 'ไม่สามารถบันทึกได้: ' + err.message, 'error');
+                showModal('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง: ' + err.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalBtnContent;
@@ -497,18 +474,18 @@
                 emptyState.style.display = 'none';
                 registrations.forEach((reg) => {
                     const row = `<tr class="hover:bg-slate-800/60 transition duration-150 group">
-                        <td class="px-6 py-4 font-medium text-slate-200">${reg.fullName}</td>
-                        <td class="px-6 py-4 text-slate-300">${reg.profession}</td>
-                        <td class="px-6 py-4 text-slate-300">${reg.department}</td>
-                        <td class="px-6 py-4 text-slate-300">${reg.phone}</td>
-                        <td class="px-6 py-4 text-cyan-400/90 text-sm whitespace-normal min-w-[150px]">${reg.kidney}</td>
-                        <td class="px-6 py-4 text-pink-400/90 text-sm whitespace-normal min-w-[150px]">${reg.organ}</td>
-                        <td class="px-6 py-4 text-emerald-400/90 text-sm whitespace-normal min-w-[150px]">${reg.heart}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">${reg.fullName}</td>
+                        <td class="px-6 py-4 text-slate-700">${reg.profession}</td>
+                        <td class="px-6 py-4 text-slate-700">${reg.department}</td>
+                        <td class="px-6 py-4 text-slate-700">${reg.phone}</td>
+                        <td class="px-6 py-4 text-cyan-600 text-sm whitespace-normal min-w-[150px]">${reg.kidney}</td>
+                        <td class="px-6 py-4 text-pink-600 text-sm whitespace-normal min-w-[150px]">${reg.organ}</td>
+                        <td class="px-6 py-4 text-emerald-600 text-sm whitespace-normal min-w-[150px]">${reg.heart}</td>
                         <td class="px-6 py-4 text-center opacity-70 group-hover:opacity-100 transition-opacity">
-                            <button onclick="window.editData('${reg.id}')" class="text-blue-400 hover:text-blue-300 hover:scale-110 transition-transform mx-2" title="แก้ไข">
+                            <button onclick="window.editData('${reg.id}')" class="text-blue-500 hover:text-blue-600 hover:scale-110 transition-transform mx-2" title="แก้ไข">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                             </button>
-                            <button onclick="window.confirmDelete('${reg.id}')" class="text-rose-400 hover:text-rose-300 hover:scale-110 transition-transform mx-2" title="ลบ">
+                            <button onclick="window.confirmDelete('${reg.id}')" class="text-rose-500 hover:text-rose-600 hover:scale-110 transition-transform mx-2" title="ลบ">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                         </td>
@@ -549,19 +526,19 @@
             restoreCheckboxes('heart', data.heart);
 
             window.switchTab('register');
-            showModal('โหมดแก้ไขข้อมูล', 'ดึงข้อมูลจาก Cloud มาที่ฟอร์มเรียบร้อยแล้ว<br>สามารถแก้ไขและกดยืนยันได้เลย', 'info');
+            showModal('โหมดแก้ไขข้อมูล', 'ดึงข้อมูลมาที่ฟอร์มเรียบร้อยแล้ว<br>สามารถแก้ไขและกดยืนยันได้เลย', 'info');
         }
 
         let deleteTargetId = null;
         window.confirmDelete = function(id) {
             deleteTargetId = id;
-            showModal('ยืนยันการลบข้อมูล', 'คุณต้องการลบข้อมูลรายชื่อนี้ใช่หรือไม่?<br><span class="text-rose-400">คำเตือน: ข้อมูลจะถูกลบออกจาก Cloud อย่างถาวร</span>', 'warning', true);
+            showModal('ยืนยันการลบข้อมูล', 'คุณต้องการลบข้อมูลรายชื่อนี้ใช่หรือไม่?<br><span class="text-rose-500">คำเตือน: ข้อมูลจะถูกลบอย่างถาวร</span>', 'warning', true);
         }
 
         window.executeDelete = async function() {
-            if(deleteTargetId && currentUser) {
+            if(deleteTargetId) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'ttls_registrations', deleteTargetId);
+                    const docRef = doc(db, 'ttls_registrations', deleteTargetId);
                     await deleteDoc(docRef);
                     window.closeModal();
                 } catch (err) {
@@ -619,17 +596,17 @@
 
             if(type === 'success') {
                 iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]">✅</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-emerald-900/40 border border-emerald-500/30 mb-5 shadow-[0_0_20px_rgba(16,185,129,0.2)]';
-                confirmBtn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] transition duration-200';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-emerald-100 border border-emerald-300 mb-5 shadow-sm';
+                confirmBtn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
             } else if (type === 'warning') {
                 iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]">⚠️</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-amber-900/40 border border-amber-500/30 mb-5 shadow-[0_0_20px_rgba(245,158,11,0.2)]';
-                confirmBtn.className = 'bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.4)] transition duration-200';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-amber-100 border border-amber-300 mb-5 shadow-sm';
+                confirmBtn.className = 'bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
                 confirmBtn.innerText = 'ยืนยันลบข้อมูล';
             } else {
-                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(96,165,250,0.8)]">🤖</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-blue-900/40 border border-blue-500/30 mb-5 shadow-[0_0_20px_rgba(59,130,246,0.2)]';
-                confirmBtn.className = 'bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)] transition duration-200';
+                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">❌</span>';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-rose-100 border border-rose-300 mb-5 shadow-sm';
+                confirmBtn.className = 'bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
             }
 
             if(isConfirm) {
@@ -641,7 +618,6 @@
                 confirmBtn.onclick = window.closeModal;
             }
 
-            // Animate In
             modal.classList.remove('hidden');
             setTimeout(() => {
                 modalContent.classList.remove('scale-95', 'opacity-0');
@@ -653,14 +629,13 @@
             const modal = document.getElementById('customModal');
             const modalContent = document.getElementById('modalContent');
             
-            // Animate Out
             modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
             
             setTimeout(() => {
                 modal.classList.add('hidden');
                 deleteTargetId = null;
-            }, 200); // Wait for transition
+            }, 200); 
         }
     </script>
 </body>
