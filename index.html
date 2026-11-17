@@ -7,377 +7,544 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>ระบบลงทะเบียน Transplant Team Learning Series</title>
+    <title>ระบบลงทะเบียน Transplant Team Learning Series (organttls)</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS สำหรับ Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2canvas สำหรับบันทึกรูป Schedule Card ความละเอียดสูง -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Google Fonts: Sarabun & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         body { 
-            font-family: 'Sarabun', sans-serif; 
-            background-color: #f8fafc; 
+            font-family: 'Sarabun', 'Inter', sans-serif; 
+            background-color: #f4f6f9; 
             color: #0f172a; 
             overflow-x: hidden;
-        }
-        .blob {
-            position: absolute;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.4;
-            animation: moveBlobs 20s infinite alternate;
-        }
-        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(6, 182, 212, 0.4); } 
-        .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: rgba(16, 185, 129, 0.3); } 
-        .blob-3 { top: 40%; left: 50%; width: 400px; height: 400px; background: rgba(139, 92, 246, 0.3); transform: translate(-50%, -50%); } 
-
-        @keyframes moveBlobs {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0, 0) scale(1); }
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        /* Bento Card Style */
+        .bento-card {
+            background: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 1px 3px 0 rgba(15, 23, 42, 0.02);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .glass-input {
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid #cbd5e1; 
+        /* Input Styling (ขนาด 16px ป้องกันจอมือถือซูมอัตโนมัติ) */
+        .bento-input {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0; 
             color: #0f172a;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            transition: all 0.2s ease;
         }
-        .glass-input:focus {
+        .bento-input:focus {
             outline: none;
-            border-color: #0ea5e9; 
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
-            background: rgba(255, 255, 255, 1);
+            border-color: #0284c7; 
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+            background: #ffffff;
         }
-        
-        input[type="checkbox"] { accent-color: #0ea5e9; }
 
-        .tab-active { 
-            border-bottom-width: 3px; 
-            border-color: #0ea5e9; 
-            color: #0284c7; 
-            font-weight: 600; 
+        /* Custom Date Option Card */
+        .date-option-card {
+            transition: all 0.2s ease;
         }
-        .tab-inactive { 
-            color: #64748b; 
-            font-weight: 500; 
-            transition: color 0.3s;
+        .date-option-card:has(input:checked) {
+            background-color: #f0f9ff;
+            border-color: #38bdf8;
         }
-        .tab-inactive:hover { color: #0f172a; }
-        
-        select option { background-color: #ffffff; color: #0f172a; }
-        
+        .date-option-organ:has(input:checked) {
+            background-color: #fdf2f8;
+            border-color: #f472b6;
+        }
+        .date-option-heart:has(input:checked) {
+            background-color: #ecfdf5;
+            border-color: #34d399;
+        }
+
+        /* Schedule Card Premium Dark Bento */
+        .schedule-card-surface {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .schedule-card-glow {
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.28) 0%, rgba(16, 185, 129, 0.08) 50%, transparent 75%);
+            pointer-events: none;
+        }
+
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="antialiased relative min-h-screen">
+<body class="antialiased min-h-screen pb-12">
 
-    <!-- Background Elements -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+    <!-- Sticky Mobile-First Segmented Navigation -->
+    <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-3 py-2.5">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <!-- แถบสถานะออนไลน์ -->
+            <div class="flex items-center justify-between px-1">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-800 tracking-tight text-base">organttls</span>
+                    <span id="db-status-pill" class="hidden inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Online
+                    </span>
+                </div>
+                <span class="text-[11px] text-slate-400 font-medium sm:hidden">Transplant Series</span>
+            </div>
 
-    <!-- แถบแจ้งเตือนสถานะการเชื่อมต่อ Database -->
-    <div id="db-status-banner" class="max-w-6xl mx-auto px-4 mt-6 hidden relative z-10">
-        <div class="p-3 rounded-xl text-sm flex items-center justify-between glass-panel border-l-4 border-l-emerald-500">
-            <span class="text-emerald-700 font-medium tracking-wide flex items-center">
-                <span class="relative flex h-3 w-3 mr-3">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                </span>
-                <strong>SYSTEM ONLINE: เชื่อมต่อฐานข้อมูล Firebase สำเร็จ</strong>
-            </span>
-        </div>
-    </div>
-
-    <!-- แถบเมนู (Tabs) -->
-    <div class="relative z-10 mb-6 sm:mb-8 mt-4 sm:mt-6">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex space-x-4 sm:space-x-8 border-b border-slate-200 overflow-x-auto hide-scrollbar">
-                <button id="tab-register" onclick="window.switchTab('register')" class="py-3 sm:py-4 px-2 sm:px-4 tab-active text-base sm:text-lg flex items-center transition-all whitespace-nowrap">
-                    <span class="mr-2">📝</span> แบบฟอร์มลงทะเบียน
+            <!-- Segmented Control Tabs (กดง่ายด้วยนิ้วโป้งบนมือถือ) -->
+            <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-2xl w-full sm:w-auto sm:min-w-[360px]">
+                <button id="tab-register" onclick="window.switchTab('register')" class="py-2.5 px-3 rounded-xl text-sm font-bold bg-white text-slate-900 shadow-sm transition-all flex items-center justify-center gap-1.5">
+                    <span>📝</span>
+                    <span>ลงทะเบียน</span>
                 </button>
-                <button id="tab-admin" onclick="window.switchTab('admin')" class="py-3 sm:py-4 px-2 sm:px-4 tab-inactive text-base sm:text-lg flex items-center transition-all whitespace-nowrap">
-                    <span class="mr-2 opacity-80">📊</span> ตรวจสอบการลงทะเบียน
+                <button id="tab-admin" onclick="window.switchTab('admin')" class="py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-800 transition-all flex items-center justify-center gap-1.5">
+                    <span>📊</span>
+                    <span>ตรวจสอบรายชื่อ</span>
                 </button>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- ส่วนที่ 1: หน้าลงทะเบียน -->
-    <div id="view-register" class="max-w-5xl mx-auto px-3 sm:px-4 pb-4 block relative z-10">
-        <div class="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10">
+    <!-- ===================================================================== -->
+    <!-- ส่วนที่ 1: หน้าแบบฟอร์มลงทะเบียน (Bento Grid + Mobile-First)            -->
+    <!-- ===================================================================== -->
+    <main id="view-register" class="max-w-5xl mx-auto px-3 sm:px-5 pt-4 sm:pt-7 block">
+        
+        <!-- Bento Hero Header Card -->
+        <section class="bento-card rounded-3xl p-5 sm:p-8 mb-4 sm:mb-6 text-center relative overflow-hidden">
+            <div class="flex justify-center mb-3 sm:mb-4">
+                <img src="https://i.postimg.cc/f33BmWSr/logo.png" alt="Transplant Logo" onerror="this.style.display='none'" class="h-16 sm:h-20 w-auto object-contain">
+            </div>
+            <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-semibold mb-2.5">
+                Transplant Team Learning Series
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight leading-snug mb-4">
+                ลงทะเบียนเข้าร่วมการประชุม
+            </h1>
             
-            <div class="text-center mb-8 sm:mb-10">
-                <div class="flex justify-center mb-4 sm:mb-6">
-                    <img src="https://i.postimg.cc/f33BmWSr/logo.png" alt="Transplant Logo" class="h-16 md:h-24 w-auto object-contain drop-shadow-sm">
+            <!-- Bento Info Pills (สถานที่ & เวลา) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-2xl mx-auto text-left">
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-lg shrink-0">📍</div>
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">สถานที่จัดประชุม</p>
+                        <p class="text-sm font-bold text-slate-800">ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า</p>
+                    </div>
                 </div>
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-                    ลงทะเบียนเข้าร่วมการประชุม
-                </h1>
-                <h2 class="text-base sm:text-xl text-slate-500 font-semibold mb-6 tracking-wide">Transplant Team Learning Series</h2>
-                
-                <div class="inline-block w-full sm:w-auto bg-white/70 border border-cyan-200 rounded-2xl px-4 sm:px-6 py-4 text-slate-700 shadow-sm">
-                    <div class="flex flex-col md:flex-row md:items-center justify-center gap-3 sm:gap-4 md:gap-8 text-left sm:text-center">
-                        <p class="flex items-center text-sm sm:text-lg">
-                            <span class="text-cyan-500 text-xl sm:text-2xl mr-3 drop-shadow-sm">📍</span> 
-                            <span>ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า</span>
-                        </p>
-                        <div class="hidden md:block w-px h-10 bg-slate-300"></div>
-                        <p class="flex items-center text-sm sm:text-lg">
-                            <span class="text-cyan-500 text-xl sm:text-2xl mr-3 drop-shadow-sm">⏰</span> 
-                            <span>เวลา 11.00 - 13.00 น.<br>
-                                <span class="text-emerald-600 font-medium text-xs sm:text-sm">(พร้อมรับประทานอาหารกลางวัน)</span>
-                            </span>
-                        </p>
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg shrink-0">⏰</div>
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">เวลา</p>
+                        <p class="text-sm font-bold text-slate-800">11.00 - 13.00 น.</p>
+                        <p class="text-xs font-semibold text-emerald-600">(พร้อมรับประทานอาหารกลางวัน)</p>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <form id="registrationForm" onsubmit="window.submitForm(event)">
+        <!-- Bento Main Grid: ซ้าย (ฟอร์มกรอก) / ขวา (My Schedule Card สด) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+            
+            <!-- ฝั่งฟอร์มลงทะเบียน (7 คอลัมน์บนจอใหญ่ / เต็มจอบนมือถือ) -->
+            <form id="registrationForm" onsubmit="window.submitForm(event)" class="lg:col-span-7 space-y-4 sm:space-y-5">
                 
                 <!-- แถบแจ้งเตือนเมื่ออยู่ในโหมดแก้ไขข้อมูล -->
-                <div id="editModeBanner" class="hidden mb-6 bg-amber-50 border-l-4 border-amber-500 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-                    <div class="flex items-center text-amber-800 text-sm sm:text-base">
-                        <span class="text-xl mr-2.5">✏️</span>
+                <div id="editModeBanner" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm">
+                    <div class="flex items-center gap-2.5 text-amber-900 text-sm">
+                        <span class="text-lg">✏️</span>
                         <span>กำลังแก้ไขข้อมูลของ: <strong id="editingUserName" class="underline"></strong></span>
                     </div>
-                    <button type="button" onclick="window.cancelEdit()" class="self-end sm:self-auto bg-white hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors">
-                        ยกเลิกการแก้ไข
+                    <button type="button" onclick="window.cancelEdit()" class="bg-white hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl shrink-0">
+                        ยกเลิก
                     </button>
                 </div>
 
-                <!-- ข้อมูลส่วนบุคคล -->
-                <div class="mb-10">
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 flex items-center border-b border-slate-100 pb-3">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-100 to-blue-100 border border-cyan-200 flex items-center justify-center mr-3 shadow-sm">
-                            <span class="text-sm">👤</span>
-                        </div>
-                        ข้อมูลส่วนบุคคล
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                        <div class="space-y-1.5">
-                            <label class="block text-sm font-medium text-slate-700">ชื่อ-นามสกุล <span class="text-rose-500">*</span></label>
-                            <input type="text" id="fullName" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 text-base">
-                        </div>
-                        
-                        <div class="space-y-1.5">
-                            <label class="block text-sm font-medium text-slate-700">ตำแหน่ง/วิชาชีพ <span class="text-rose-500">*</span></label>
-                            <select id="profession" onchange="window.toggleOtherProfession()" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 appearance-none mb-2 text-base">
-                                <option value="" disabled selected>-- เลือกตำแหน่ง/วิชาชีพ --</option>
-                                <option value="แพทย์">แพทย์</option>
-                                <option value="พยาบาล">พยาบาล</option>
-                                <option value="เภสัชกร">เภสัชกร</option>
-                                <option value="วิสัญญี">วิสัญญี</option>
-                                <option value="อื่นๆ">อื่นๆ (โปรดระบุ)</option>
-                            </select>
-                            <input type="text" id="professionOther" placeholder="โปรดระบุตำแหน่งของคุณ..." class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 hidden text-base">
+                <!-- Bento Card 1: ข้อมูลส่วนบุคคล -->
+                <div class="bento-card rounded-3xl p-5 sm:p-6">
+                    <div class="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+                        <span class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm font-bold">1</span>
+                        <h2 class="text-lg font-bold text-slate-900">ข้อมูลส่วนบุคคล</h2>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">ชื่อ-นามสกุล <span class="text-rose-500">*</span></label>
+                            <input type="text" id="fullName" oninput="window.updateLiveScheduleCard()" placeholder="ระบุคำนำหน้า ชื่อ และนามสกุล" required class="w-full bento-input rounded-2xl px-4 py-3">
                         </div>
 
-                        <div class="space-y-1.5">
-                            <label class="block text-sm font-medium text-slate-700">หน่วยงาน <span class="text-rose-500">*</span></label>
-                            <input type="text" id="department" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 text-base">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">ตำแหน่ง/วิชาชีพ <span class="text-rose-500">*</span></label>
+                                <select id="profession" onchange="window.toggleOtherProfession(); window.updateLiveScheduleCard();" required class="w-full bento-input rounded-2xl px-4 py-3">
+                                    <option value="" disabled selected>-- เลือกตำแหน่ง --</option>
+                                    <option value="แพทย์">แพทย์</option>
+                                    <option value="พยาบาล">พยาบาล</option>
+                                    <option value="เภสัชกร">เภสัชกร</option>
+                                    <option value="วิสัญญี">วิสัญญี</option>
+                                    <option value="อื่นๆ">อื่นๆ (โปรดระบุ)</option>
+                                </select>
+                                <input type="text" id="professionOther" oninput="window.updateLiveScheduleCard()" placeholder="โปรดระบุตำแหน่งของคุณ..." class="w-full bento-input rounded-2xl px-4 py-3 mt-2.5 hidden">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">หน่วยงาน <span class="text-rose-500">*</span></label>
+                                <input type="text" id="department" oninput="window.updateLiveScheduleCard()" placeholder="ระบุหอผู้ป่วย / แผนก" required class="w-full bento-input rounded-2xl px-4 py-3">
+                            </div>
                         </div>
-                        
-                        <div class="space-y-1.5">
-                            <label class="block text-sm font-medium text-slate-700">เบอร์โทรศัพท์ติดต่อ <span class="text-rose-500">*</span></label>
-                            <input type="tel" id="phone" required class="w-full glass-input rounded-xl px-4 py-3 sm:py-3 text-base">
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">เบอร์โทรศัพท์ติดต่อ <span class="text-rose-500">*</span></label>
+                            <input type="tel" inputmode="tel" id="phone" placeholder="08X-XXX-XXXX หรือเบอร์ภายใน" required class="w-full bento-input rounded-2xl px-4 py-3">
                         </div>
                     </div>
                 </div>
 
-                <!-- เลือกวันที่เข้าร่วม -->
-                <div class="mb-8 sm:mb-10">
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 border border-purple-200 flex items-center justify-center mr-3 shadow-sm">
-                                <span class="text-sm">📅</span>
-                            </div>
-                            เลือกหัวข้อและวันที่เข้าร่วม
+                <!-- Bento Card 2: เลือกหัวข้อและวันที่เข้าร่วม -->
+                <div class="bento-card rounded-3xl p-5 sm:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">2</span>
+                            <h2 class="text-lg font-bold text-slate-900">เลือกหัวข้อและวันที่เข้าร่วม</h2>
                         </div>
-                        <span class="text-xs sm:text-sm font-medium text-cyan-700 bg-cyan-50 px-3 py-1.5 rounded-full border border-cyan-200 inline-block w-max self-start sm:self-auto">สามารถเลือกได้มากกว่า 1 วัน</span>
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                        
-                        <!-- Box 1: Kidney Transplant -->
-                        <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-cyan-400/50 hover:shadow-md relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
-                            <h4 class="text-base sm:text-lg font-bold text-cyan-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Kidney Transplant</h4>
-                            <div class="space-y-3 sm:space-y-4">
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="kidney" value="11 ธันวาคม 2569" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">11 ธันวาคม 2569</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="kidney" value="12 มีนาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">12 มีนาคม 2570</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="kidney" value="11 มิถุนายน 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-cyan-500 focus:ring-cyan-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">11 มิถุนายน 2570</span>
-                                </label>
+                        <span class="text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-3 py-1 rounded-full">
+                            เลือกได้มากกว่า 1 วัน
+                        </span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- หัวข้อ 1: Kidney Transplant -->
+                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                                <h3 class="text-base font-bold text-sky-800">Kidney Transplant</h3>
+                            </div>
+                            <div class="space-y-2.5" id="group-kidney">
+                                <!-- สร้างรายการวันที่แบบมีปุ่ม Google Calendar อัตโนมัติเมื่อกดเลือก -->
+                                <div class="date-option-card bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="kidney" value="11 ธันวาคม 2569" onchange="window.handleDateToggle(this, 'Kidney Transplant')" class="w-5 h-5 rounded accent-sky-600">
+                                        <span class="text-slate-800 font-medium text-base">11 ธันวาคม 2569</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-sky-100"></div>
+                                </div>
+                                <div class="date-option-card bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="kidney" value="12 มีนาคม 2570" onchange="window.handleDateToggle(this, 'Kidney Transplant')" class="w-5 h-5 rounded accent-sky-600">
+                                        <span class="text-slate-800 font-medium text-base">12 มีนาคม 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-sky-100"></div>
+                                </div>
+                                <div class="date-option-card bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="kidney" value="11 มิถุนายน 2570" onchange="window.handleDateToggle(this, 'Kidney Transplant')" class="w-5 h-5 rounded accent-sky-600">
+                                        <span class="text-slate-800 font-medium text-base">11 มิถุนายน 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-sky-100"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Box 2: Organ Donor -->
-                        <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-pink-400/50 hover:shadow-md relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 to-rose-500 opacity-80"></div>
-                            <h4 class="text-base sm:text-lg font-bold text-pink-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Organ Donor</h4>
-                            <div class="space-y-3 sm:space-y-4">
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="organ" value="8 มกราคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">8 มกราคม 2570</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="organ" value="16 เมษายน 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">16 เมษายน 2570</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="organ" value="9 กรกฎาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-pink-500 focus:ring-pink-500 accent-pink-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">9 กรกฎาคม 2570</span>
-                                </label>
+                        <!-- หัวข้อ 2: Organ Donor -->
+                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+                                <h3 class="text-base font-bold text-pink-800">Organ Donor</h3>
+                            </div>
+                            <div class="space-y-2.5" id="group-organ">
+                                <div class="date-option-card date-option-organ bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="organ" value="8 มกราคม 2570" onchange="window.handleDateToggle(this, 'Organ Donor')" class="w-5 h-5 rounded accent-pink-600">
+                                        <span class="text-slate-800 font-medium text-base">8 มกราคม 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-pink-100"></div>
+                                </div>
+                                <div class="date-option-card date-option-organ bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="organ" value="16 เมษายน 2570" onchange="window.handleDateToggle(this, 'Organ Donor')" class="w-5 h-5 rounded accent-pink-600">
+                                        <span class="text-slate-800 font-medium text-base">16 เมษายน 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-pink-100"></div>
+                                </div>
+                                <div class="date-option-card date-option-organ bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="organ" value="9 กรกฎาคม 2570" onchange="window.handleDateToggle(this, 'Organ Donor')" class="w-5 h-5 rounded accent-pink-600">
+                                        <span class="text-slate-800 font-medium text-base">9 กรกฎาคม 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-pink-100"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Box 3: Heart Transplant -->
-                        <div class="group bg-white/70 border border-slate-200 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white hover:border-emerald-400/50 hover:shadow-md relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-80"></div>
-                            <h4 class="text-base sm:text-lg font-bold text-emerald-700 text-left sm:text-center mb-4 sm:mb-5 tracking-wide">Heart Transplant</h4>
-                            <div class="space-y-3 sm:space-y-4">
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="heart" value="19 กุมภาพันธ์ 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">19 กุมภาพันธ์ 2570</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="heart" value="21 พฤษภาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">21 พฤษภาคม 2570</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer p-3 sm:p-2 bg-white sm:bg-transparent border border-slate-100 sm:border-transparent hover:bg-slate-50 rounded-xl sm:rounded-lg transition-colors shadow-sm sm:shadow-none">
-                                    <input type="checkbox" name="heart" value="13 สิงหาคม 2570" class="w-6 h-6 sm:w-5 sm:h-5 rounded bg-white border-slate-300 text-emerald-500 focus:ring-emerald-500 accent-emerald-500">
-                                    <span class="text-slate-700 text-sm sm:text-base font-medium sm:font-normal">13 สิงหาคม 2570</span>
-                                </label>
+                        <!-- หัวข้อ 3: Heart Transplant -->
+                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <h3 class="text-base font-bold text-emerald-800">Heart Transplant</h3>
+                            </div>
+                            <div class="space-y-2.5" id="group-heart">
+                                <div class="date-option-card date-option-heart bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="heart" value="19 กุมภาพันธ์ 2570" onchange="window.handleDateToggle(this, 'Heart Transplant')" class="w-5 h-5 rounded accent-emerald-600">
+                                        <span class="text-slate-800 font-medium text-base">19 กุมภาพันธ์ 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-emerald-100"></div>
+                                </div>
+                                <div class="date-option-card date-option-heart bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="heart" value="21 พฤษภาคม 2570" onchange="window.handleDateToggle(this, 'Heart Transplant')" class="w-5 h-5 rounded accent-emerald-600">
+                                        <span class="text-slate-800 font-medium text-base">21 พฤษภาคม 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-emerald-100"></div>
+                                </div>
+                                <div class="date-option-card date-option-heart bg-white border border-slate-200 rounded-xl p-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="heart" value="13 สิงหาคม 2570" onchange="window.handleDateToggle(this, 'Heart Transplant')" class="w-5 h-5 rounded accent-emerald-600">
+                                        <span class="text-slate-800 font-medium text-base">13 สิงหาคม 2570</span>
+                                    </label>
+                                    <div class="gcal-slot hidden mt-2.5 pt-2.5 border-t border-emerald-100"></div>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <div class="text-center mt-8 sm:mt-12 relative group block w-full">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500 group-hover:duration-200 w-full md:w-2/3 mx-auto"></div>
-                    <button type="submit" class="relative bg-gradient-to-r from-cyan-600 to-blue-600 border border-transparent text-white font-bold py-4 sm:py-4 px-6 sm:px-12 rounded-full shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] text-lg w-full md:w-2/3 mx-auto flex items-center justify-center space-x-2" id="submitBtn">
-                        <span id="submitBtnText">ยืนยันการลงทะเบียน</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/80" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
+                <!-- ปุ่มยืนยันการลงทะเบียน -->
+                <button type="submit" id="submitBtn" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all text-base sm:text-lg flex items-center justify-center gap-2">
+                    <span id="submitBtnText">ยืนยันการลงทะเบียน</span>
+                    <span>✓</span>
+                </button>
             </form>
-        </div>
-        
-        <!-- ตัวบอกเวอร์ชัน (เอาไว้ตรวจสอบว่าโหลด Cache ใหม่หรือยัง) -->
-        <div class="text-center text-xs text-slate-400 mt-6 mb-2">
-            เวอร์ชัน 3.2 (เพิ่มระบบค้นหาและปุ่มแก้ไขที่ชัดเจนขึ้น)
-        </div>
-    </div>
 
-    <!-- ส่วนที่ 2: หน้าแอดมิน / ตรวจสอบการลงทะเบียน -->
-    <div id="view-admin" class="max-w-7xl mx-auto px-3 sm:px-4 pb-12 hidden relative z-10">
-        <div class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4">
-                <div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1 flex items-center">
-                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse mr-2 sm:mr-3 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
-                        ตรวจสอบรายชื่อและจัดการข้อมูล
-                    </h2>
-                    <p class="text-slate-500 text-xs sm:text-sm ml-5 sm:ml-6">อัปเดตอัตโนมัติแบบ Real-time</p>
+            <!-- ฝั่งขวา: My Schedule Card แบบ Real-time (5 คอลัมน์บนจอใหญ่ / ด้านล่างฟอร์มบนมือถือ) -->
+            <aside class="lg:col-span-5 lg:sticky lg:top-20 space-y-3">
+                <div class="bento-card rounded-3xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between mb-3 px-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">ตัวอย่างการ์ดแจ้งเตือนส่วนตัว</span>
+                        <span class="text-xs font-semibold text-sky-600">อัปเดตอัตโนมัติ</span>
+                    </div>
+
+                    <!-- พื้นที่จับภาพ My Schedule Card (ไม่มี #TTLS-SHLZ และกรอบ) -->
+                    <div id="liveScheduleCardCapture" class="schedule-card-surface rounded-2xl p-5 sm:p-6 text-white shadow-xl">
+                        <div class="schedule-card-glow"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="mb-5">
+                                <p class="text-[11px] font-bold tracking-[0.2em] text-sky-400 uppercase">MY SCHEDULE CARD</p>
+                                <h3 class="text-base font-bold text-white/95 mt-0.5">Transplant Team Learning Series</h3>
+                            </div>
+
+                            <div class="pb-4 mb-4 border-b border-white/10">
+                                <p class="text-[11px] text-slate-400 mb-0.5">ผู้เข้าร่วมประชุม</p>
+                                <p id="liveCardName" class="text-xl font-bold text-white break-words">ชื่อ-นามสกุล ของท่าน</p>
+                                <p id="liveCardSub" class="text-xs text-slate-300 mt-1">ตำแหน่ง • หน่วยงาน</p>
+                            </div>
+
+                            <div class="mb-5">
+                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">วันที่ลงทะเบียนเข้าร่วม</p>
+                                <div id="liveCardSessions" class="space-y-2 text-xs">
+                                    <div class="bg-white/5 rounded-xl p-3 text-slate-400 text-center">
+                                        กรุณาเลือกหัวข้อและวันที่ด้านซ้ายเพื่อแสดงตารางนัดหมาย
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3.5 border-t border-white/10 space-y-1 text-xs text-slate-300">
+                                <p class="flex items-center gap-2">
+                                    <span>📍</span>
+                                    <span>ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <span>⏰</span>
+                                    <span>11.00 - 13.00 น. <span class="text-emerald-400 font-medium">(พร้อมรับประทานอาหารกลางวัน)</span></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ปุ่มบันทึกลงโทรศัพท์ -->
+                    <button type="button" onclick="window.downloadScheduleCard('liveScheduleCardCapture', document.getElementById('fullName').value)" class="mt-3.5 w-full bg-sky-600 hover:bg-sky-500 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-2xl shadow-sm transition-all text-sm flex items-center justify-center gap-2">
+                        <span>📥</span>
+                        <span>บันทึกลงโทรศัพท์</span>
+                    </button>
                 </div>
-                
-                <button onclick="window.exportToExcel()" class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-3 sm:py-2.5 px-6 rounded-xl shadow-sm flex items-center justify-center transition-all duration-300 hover:border-emerald-500 hover:text-emerald-700 group">
-                    <span class="mr-2 group-hover:scale-110 transition-transform">📊</span> 
-                    <span class="font-medium">Export to Excel</span>
+            </aside>
+        </div>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- ส่วนที่ 2: หน้าตรวจสอบการลงทะเบียน (Mobile Cards + Desktop Table)       -->
+    <!-- ===================================================================== -->
+    <section id="view-admin" class="max-w-6xl mx-auto px-3 sm:px-5 pt-4 sm:pt-7 hidden">
+        <div class="bento-card rounded-3xl p-4 sm:p-7">
+            
+            <!-- Header + Export Excel -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">ตรวจสอบการลงทะเบียน</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1 ml-5">อัปเดตอัตโนมัติแบบ Real-time • สามารถดูการ์ดนัดหมายหรือแก้ไขข้อมูลได้ทันที</p>
+                </div>
+
+                <button onclick="window.exportToExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold py-3 px-5 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-sm transition-all">
+                    <span>📊</span>
+                    <span>Export to Excel</span>
                 </button>
             </div>
 
             <!-- กล่องคำแนะนำ + ช่องค้นหารายชื่อ -->
-            <div class="mb-6 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-cyan-50/80 border border-cyan-200 rounded-2xl p-4">
-                <div class="flex items-start sm:items-center gap-3 text-cyan-900 text-xs sm:text-sm">
-                    <span class="text-xl bg-white p-2 rounded-xl shadow-sm border border-cyan-100 shrink-0">💡</span>
-                    <div>
-                        <p class="font-bold text-cyan-800">ลงทะเบียนผิดพลาด หรือต้องการเปลี่ยนวันเข้าร่วม?</p>
-                        <p class="text-cyan-700 mt-0.5">สามารถค้นหารายชื่อของท่าน แล้วกดปุ่ม <span class="inline-block bg-blue-100 text-blue-700 font-semibold px-2 py-0.5 rounded border border-blue-200">✏️ แก้ไข</span> ทางด้านขวาของตารางได้ทันที</p>
-                    </div>
+            <div class="bg-sky-50/80 border border-sky-200/80 rounded-2xl p-3.5 sm:p-4 mb-5 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex items-start sm:items-center gap-3 text-xs sm:text-sm text-sky-950">
+                    <span class="text-lg bg-white w-9 h-9 rounded-xl flex items-center justify-center shadow-sm shrink-0">💡</span>
+                    <p>
+                        ค้นหาชื่อของท่านเพื่อเปิดดู <strong>Schedule Card</strong> บันทึกลงโทรศัพท์ หรือกดปุ่ม <strong>✏️ แก้ไข</strong> เพื่อเปลี่ยนวันเข้าร่วมได้ตลอดเวลา
+                    </p>
                 </div>
-                
-                <!-- ช่องค้นหา -->
-                <div class="relative w-full lg:w-72 shrink-0">
+                <div class="relative w-full lg:w-80 shrink-0">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">🔍</span>
-                    <input type="text" id="searchInput" oninput="window.renderTable()" placeholder="ค้นหาชื่อ, หน่วยงาน, เบอร์โทร..." class="w-full bg-white border border-cyan-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all">
+                    <input type="text" id="searchInput" oninput="window.renderRegistrations()" placeholder="ค้นหาชื่อ, หน่วยงาน, เบอร์โทร..." class="w-full bg-white border border-sky-200 rounded-xl pl-10 pr-4 py-2.5 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-sky-500">
                 </div>
             </div>
 
-            <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white/90 shadow-sm relative">
+            <!-- แสดงผลบนมือถือเป็นหลัก (Mobile Cards View) -->
+            <div id="mobileCardsContainer" class="md:hidden space-y-3.5">
+                <!-- การ์ดรายชื่อจะถูกสร้างด้วย JS ที่นี่ -->
+            </div>
+
+            <!-- แสดงผลบนหน้าจอคอมพิวเตอร์ (Desktop Table View) -->
+            <div class="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 bg-white">
                 <table class="min-w-full text-left text-sm whitespace-nowrap">
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
                         <tr>
-                            <th class="px-5 py-4 font-semibold">ชื่อ-นามสกุล</th>
-                            <th class="px-5 py-4 font-semibold">ตำแหน่ง</th>
-                            <th class="px-5 py-4 font-semibold">หน่วยงาน</th>
-                            <th class="px-5 py-4 font-semibold">เบอร์โทรศัพท์</th>
-                            <th class="px-5 py-4 font-semibold text-cyan-600">Kidney</th>
-                            <th class="px-5 py-4 font-semibold text-pink-600">Organ Donor</th>
-                            <th class="px-5 py-4 font-semibold text-emerald-600">Heart</th>
-                            <th class="px-5 py-4 font-semibold text-center sticky right-0 bg-slate-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.06)] z-10">จัดการข้อมูล</th>
+                            <th class="px-4 py-3.5 font-semibold">ชื่อ-นามสกุล</th>
+                            <th class="px-4 py-3.5 font-semibold">ตำแหน่ง</th>
+                            <th class="px-4 py-3.5 font-semibold">หน่วยงาน</th>
+                            <th class="px-4 py-3.5 font-semibold">เบอร์โทร</th>
+                            <th class="px-4 py-3.5 font-semibold text-sky-700">Kidney</th>
+                            <th class="px-4 py-3.5 font-semibold text-pink-700">Organ Donor</th>
+                            <th class="px-4 py-3.5 font-semibold text-emerald-700">Heart</th>
+                            <th class="px-4 py-3.5 font-semibold text-center sticky right-0 bg-slate-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]">จัดการข้อมูล</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100">
-                        <!-- ข้อมูลจะถูกดึงมาใส่ที่นี่ -->
+                        <!-- แถวข้อมูลจะถูกสร้างด้วย JS ที่นี่ -->
                     </tbody>
                 </table>
             </div>
-            
-            <div id="emptyState" class="text-center py-16 text-slate-500 flex flex-col items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-cyan-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+
+            <!-- สถานะโหลด / ไม่พบข้อมูล -->
+            <div id="emptyState" class="text-center py-14 text-slate-500 flex flex-col items-center justify-center">
+                <svg class="animate-spin h-7 w-7 text-sky-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                กำลังเชื่อมต่อและซิงค์ข้อมูล...
+                <span class="text-sm">กำลังเชื่อมต่อและซิงค์ข้อมูล...</span>
             </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- Modal 1: แสดง Schedule Card รายบุคคล + บันทึกลงโทรศัพท์ + Google Cal   -->
+    <!-- ===================================================================== -->
+    <div id="scheduleCardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl relative my-auto">
+            <div class="flex items-center justify-between mb-3">
+                <span id="scheduleModalBadge" class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                    My Schedule Card
+                </span>
+                <button type="button" onclick="window.closeScheduleModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <!-- พื้นที่สำหรับบันทึกรูปภาพลงโทรศัพท์ (ไม่มี #TTLS-SHLZ และกรอบ) -->
+            <div id="modalScheduleCardCapture" class="schedule-card-surface rounded-2xl p-5 sm:p-6 text-white shadow-lg">
+                <div class="schedule-card-glow"></div>
+                <div class="relative z-10">
+                    <div class="mb-5">
+                        <p class="text-[11px] font-bold tracking-[0.2em] text-sky-400 uppercase">MY SCHEDULE CARD</p>
+                        <h3 class="text-base font-bold text-white/95 mt-0.5">Transplant Team Learning Series</h3>
+                    </div>
+
+                    <div class="pb-4 mb-4 border-b border-white/10">
+                        <p class="text-[11px] text-slate-400 mb-0.5">ผู้เข้าร่วมประชุม</p>
+                        <p id="modalCardName" class="text-xl font-bold text-white break-words">-</p>
+                        <p id="modalCardSub" class="text-xs text-slate-300 mt-1">-</p>
+                    </div>
+
+                    <div class="mb-5">
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">วันที่ลงทะเบียนเข้าร่วม</p>
+                        <div id="modalCardSessions" class="space-y-2 text-xs">
+                            <!-- รายการวันที่ -->
+                        </div>
+                    </div>
+
+                    <div class="pt-3.5 border-t border-white/10 space-y-1 text-xs text-slate-300">
+                        <p class="flex items-center gap-2">
+                            <span>📍</span>
+                            <span>ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <span>⏰</span>
+                            <span>11.00 - 13.00 น. <span class="text-emerald-400 font-medium">(พร้อมรับประทานอาหารกลางวัน)</span></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ปุ่มบันทึกลงโทรศัพท์ -->
+            <button type="button" id="modalSavePhoneBtn" class="mt-4 w-full bg-sky-600 hover:bg-sky-500 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                <span>📥</span>
+                <span>บันทึกลงโทรศัพท์</span>
+            </button>
+
+            <!-- ปุ่มบันทึก Google Calendar เพื่อนัดหมาย แยกตามวันที่ลงทะเบียน -->
+            <div id="modalGcalLinks" class="mt-3 space-y-2"></div>
         </div>
     </div>
 
-    <!-- Modal แจ้งเตือนแบบ Custom -->
-    <div id="customModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-opacity">
-        <div class="glass-panel bg-white border border-slate-200 rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0" id="modalContent">
+    <!-- ===================================================================== -->
+    <!-- Modal 2: แจ้งเตือนทั่วไปและยืนยันการลบข้อมูล                           -->
+    <!-- ===================================================================== -->
+    <div id="customModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-sm w-full transform transition-all scale-95 opacity-0" id="modalContent">
             <div class="text-center">
-                <div id="modalIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl mb-5 shadow-sm"></div>
-                <h3 id="modalTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
-                <p id="modalMessage" class="text-sm text-slate-600 mb-8 leading-relaxed"></p>
-                <div class="flex justify-center space-x-4">
-                    <button id="modalCancelBtn" onclick="window.closeModal()" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 font-semibold py-2.5 px-6 rounded-xl transition duration-200">ยกเลิก</button>
-                    <button id="modalConfirmBtn" onclick="window.closeModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-md transition duration-200">ตกลง</button>
+                <div id="modalIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl mb-4"></div>
+                <h3 id="modalTitle" class="text-xl font-bold text-slate-900 mb-2"></h3>
+                <p id="modalMessage" class="text-sm text-slate-600 mb-6 leading-relaxed"></p>
+                <div class="flex justify-center gap-3">
+                    <button id="modalCancelBtn" onclick="window.closeModal()" class="hidden flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-4 rounded-2xl transition">ยกเลิก</button>
+                    <button id="modalConfirmBtn" onclick="window.closeModal()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded-2xl shadow-sm transition">ตกลง</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Javascript -->
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-5 py-3 rounded-full shadow-xl opacity-0 pointer-events-none transition-all duration-300 translate-y-2">
+        <span id="toastMsg">ดำเนินการเรียบร้อย</span>
+    </div>
+
+    <!-- Javascript Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, collection, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Config ฐานข้อมูลของคุณ
+        // Config ฐานข้อมูล Firebase เดิมของระบบ organttls
         const firebaseConfig = {
             apiKey: "AIzaSyCJPNRtc1BSvpmfJP-Y1HcirWEPvWdiHxo",
             authDomain: "register-612dc.firebaseapp.com",
@@ -390,39 +557,61 @@
         
         let app, db;
         let registrations = [];
-        let editId = null; 
+        let editId = null;
+        let deleteTargetId = null;
 
-        // เริ่มต้นระบบ
+        // แผนที่แปลงวันที่ พ.ศ. เป็น ค.ศ. สำหรับ Google Calendar
+        const thaiDateToYMD = {
+            '11 ธันวาคม 2569': '20261211',
+            '12 มีนาคม 2570': '20270312',
+            '11 มิถุนายน 2570': '20270611',
+            '8 มกราคม 2570': '20270108',
+            '16 เมษายน 2570': '20270416',
+            '9 กรกฎาคม 2570': '20270709',
+            '19 กุมภาพันธ์ 2570': '20270219',
+            '21 พฤษภาคม 2570': '20270521',
+            '13 สิงหาคม 2570': '20270813'
+        };
+
+        // สร้างลิงก์เพิ่มนัดหมายลง Google Calendar อัตโนมัติ
+        window.buildGoogleCalendarUrl = function(topicTitle, thaiDateStr) {
+            const ymd = thaiDateToYMD[thaiDateStr] || '20261211';
+            const start = `${ymd}T110000`;
+            const end = `${ymd}T130000`;
+            const title = encodeURIComponent(`ประชุม Transplant Team Learning Series (${topicTitle})`);
+            const details = encodeURIComponent(`หัวข้อการประชุม: ${topicTitle}\nวันที่: ${thaiDateStr}\nเวลา: 11.00 - 13.00 น. (พร้อมรับประทานอาหารกลางวัน)\nสถานที่: ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า`);
+            const location = encodeURIComponent('ห้องบรรยาย ชั้น 2 ตึกอำนวยการเก่า');
+            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&ctz=Asia/Bangkok`;
+        };
+
+        // เริ่มต้นเชื่อมต่อ Firebase
         async function initializeSystem() {
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
+                document.getElementById('db-status-pill').classList.remove('hidden');
                 
-                // แสดงแถบสีเขียวเมื่อเปิดเว็บสำเร็จ
-                document.getElementById('db-status-banner').classList.remove('hidden');
-                
-                // ดึงข้อมูล
                 const colRef = collection(db, 'ttls_registrations');
                 onSnapshot(colRef, (snapshot) => {
                     registrations = [];
-                    snapshot.forEach((doc) => {
-                        registrations.push({ id: doc.id, ...doc.data() });
+                    snapshot.forEach((docSnap) => {
+                        registrations.push({ id: docSnap.id, ...docSnap.data() });
                     });
-                    registrations.sort((a, b) => b.timestamp - a.timestamp);
-                    renderTable();
+                    registrations.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    window.renderRegistrations();
                 }, (error) => {
                     console.error("Firestore Listen Error:", error);
-                    showModal('เชื่อมต่อล้มเหลว', 'เกิดข้อผิดพลาดในการดึงข้อมูลจาก Cloud', 'error');
+                    window.showModal('เชื่อมต่อล้มเหลว', 'เกิดข้อผิดพลาดในการดึงข้อมูลจาก Cloud', 'error');
                 });
-
             } catch (error) {
                 console.error("Cloud Connection Error:", error);
-                showModal('เชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณารีเฟรชหน้าจอ', 'error');
+                window.showModal('เชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณารีเฟรชหน้าจอ', 'error');
             }
         }
 
         initializeSystem();
 
+        // แสดง/ซ่อนช่องระบุตำแหน่งอื่นๆ
         window.toggleOtherProfession = function() {
             const select = document.getElementById('profession');
             const otherInput = document.getElementById('professionOther');
@@ -434,30 +623,175 @@
                 otherInput.required = false;
                 otherInput.value = '';
             }
+        };
+
+        // จัดการเมื่อติ๊กเลือกวันที่ -> แสดงปุ่ม "บันทึก Google Calendar เพื่อนัดหมาย" + อัปเดต Schedule Card
+        window.handleDateToggle = function(checkbox, topicTitle) {
+            const wrapper = checkbox.closest('.date-option-card');
+            const slot = wrapper.querySelector('.gcal-slot');
+            if (checkbox.checked) {
+                const gcalUrl = window.buildGoogleCalendarUrl(topicTitle, checkbox.value);
+                slot.innerHTML = `
+                    <a href="${gcalUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-semibold text-xs py-2 px-3 rounded-lg shadow-xs transition-all">
+                        <span>📅</span>
+                        <span>บันทึก Google Calendar เพื่อนัดหมาย</span>
+                    </a>
+                `;
+                slot.classList.remove('hidden');
+            } else {
+                slot.classList.add('hidden');
+                slot.innerHTML = '';
+            }
+            window.updateLiveScheduleCard();
+        };
+
+        function getCheckedArray(name) {
+            return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
         }
 
         function getCheckedValues(name) {
-            const checkedBoxes = document.querySelectorAll(`input[name="${name}"]:checked`);
-            const values = Array.from(checkedBoxes).map(cb => cb.value);
-            return values.length > 0 ? values.join(', ') : '-';
+            const arr = getCheckedArray(name);
+            return arr.length > 0 ? arr.join(', ') : '-';
         }
 
+        // สร้าง HTML รายการวันที่สำหรับแสดงใน Schedule Card
+        function renderScheduleSessionsHTML(kidneyList, organList, heartList) {
+            const sections = [];
+            if (kidneyList.length > 0) {
+                sections.push(`
+                    <div class="bg-white/10 rounded-xl p-2.5">
+                        <p class="text-[11px] font-bold text-sky-300 mb-1">Kidney Transplant</p>
+                        <p class="text-white font-medium leading-relaxed">${kidneyList.join(' • ')}</p>
+                    </div>
+                `);
+            }
+            if (organList.length > 0) {
+                sections.push(`
+                    <div class="bg-white/10 rounded-xl p-2.5">
+                        <p class="text-[11px] font-bold text-pink-300 mb-1">Organ Donor</p>
+                        <p class="text-white font-medium leading-relaxed">${organList.join(' • ')}</p>
+                    </div>
+                `);
+            }
+            if (heartList.length > 0) {
+                sections.push(`
+                    <div class="bg-white/10 rounded-xl p-2.5">
+                        <p class="text-[11px] font-bold text-emerald-300 mb-1">Heart Transplant</p>
+                        <p class="text-white font-medium leading-relaxed">${heartList.join(' • ')}</p>
+                    </div>
+                `);
+            }
+            if (sections.length === 0) {
+                return `<div class="bg-white/5 rounded-xl p-3 text-slate-400 text-center">ยังไม่ได้เลือกวันที่เข้าร่วม</div>`;
+            }
+            return sections.join('');
+        }
+
+        // อัปเดต My Schedule Card แบบ Real-time ในหน้าลงทะเบียน
+        window.updateLiveScheduleCard = function() {
+            const nameVal = document.getElementById('fullName').value.trim();
+            let profVal = document.getElementById('profession').value;
+            if (profVal === 'อื่นๆ') {
+                profVal = document.getElementById('professionOther').value.trim() || 'อื่นๆ';
+            }
+            const deptVal = document.getElementById('department').value.trim();
+
+            document.getElementById('liveCardName').innerText = nameVal || 'ชื่อ-นามสกุล ของท่าน';
+            const subParts = [profVal || 'ตำแหน่ง', deptVal || 'หน่วยงาน'];
+            document.getElementById('liveCardSub').innerText = subParts.join(' • ');
+
+            const kidneyList = getCheckedArray('kidney');
+            const organList = getCheckedArray('organ');
+            const heartList = getCheckedArray('heart');
+
+            document.getElementById('liveCardSessions').innerHTML = renderScheduleSessionsHTML(kidneyList, organList, heartList);
+        };
+
+        // บันทึก Schedule Card ลงโทรศัพท์เป็นไฟล์ JPG ความละเอียดสูง
+        window.downloadScheduleCard = async function(elementId, personName) {
+            const target = document.getElementById(elementId);
+            if (!target) return;
+            try {
+                window.showToast('กำลังสร้างรูปภาพ Schedule Card...');
+                const canvas = await html2canvas(target, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: '#0f172a'
+                });
+                const link = document.createElement('a');
+                const safeName = (personName && personName.trim()) ? personName.trim().replace(/\s+/g, '_') : 'Transplant_Series';
+                link.download = `Schedule_Card_${safeName}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.96);
+                link.click();
+                window.showToast('บันทึกลงโทรศัพท์เรียบร้อยแล้วค่ะ!');
+            } catch (err) {
+                console.error('Capture error:', err);
+                window.showModal('ขออภัย', 'ไม่สามารถบันทึกรูปภาพได้ กรุณาลองแคปหน้าจอแทนนะคะ', 'error');
+            }
+        };
+
+        // เปิดหน้าต่าง Schedule Card ของผู้ลงทะเบียน (ใช้ทั้งหลังลงทะเบียนเสร็จและในหน้าตรวจสอบรายชื่อ)
+        window.openScheduleCardModal = function(regData, isJustRegistered = false) {
+            document.getElementById('scheduleModalBadge').innerText = isJustRegistered ? '✅ ลงทะเบียนสำเร็จ • My Schedule Card' : '🗓️ My Schedule Card';
+            document.getElementById('modalCardName').innerText = regData.fullName || '-';
+            document.getElementById('modalCardSub').innerText = `${regData.profession || '-'} • ${regData.department || '-'}`;
+
+            const parseDates = (str) => (str && str !== '-') ? str.split(', ').map(s => s.trim()).filter(Boolean) : [];
+            const kList = parseDates(regData.kidney);
+            const oList = parseDates(regData.organ);
+            const hList = parseDates(regData.heart);
+
+            document.getElementById('modalCardSessions').innerHTML = renderScheduleSessionsHTML(kList, oList, hList);
+
+            // ตั้งค่าปุ่มบันทึกลงโทรศัพท์
+            const saveBtn = document.getElementById('modalSavePhoneBtn');
+            saveBtn.onclick = () => window.downloadScheduleCard('modalScheduleCardCapture', regData.fullName);
+
+            // สร้างปุ่มบันทึก Google Calendar เพื่อนัดหมายสำหรับแต่ละวันที่เลือก
+            const gcalContainer = document.getElementById('modalGcalLinks');
+            const allEvents = [
+                ...kList.map(d => ({ topic: 'Kidney Transplant', date: d })),
+                ...oList.map(d => ({ topic: 'Organ Donor', date: d })),
+                ...hList.map(d => ({ topic: 'Heart Transplant', date: d }))
+            ];
+
+            if (allEvents.length > 0) {
+                gcalContainer.innerHTML = allEvents.map(ev => {
+                    const url = window.buildGoogleCalendarUrl(ev.topic, ev.date);
+                    return `
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 transition-all">
+                            <span class="truncate pr-2">${ev.topic} (${ev.date})</span>
+                            <span class="text-sky-600 shrink-0">📅 บันทึก Google Calendar เพื่อนัดหมาย</span>
+                        </a>
+                    `;
+                }).join('');
+            } else {
+                gcalContainer.innerHTML = '';
+            }
+
+            document.getElementById('scheduleCardModal').classList.remove('hidden');
+        };
+
+        window.closeScheduleModal = function() {
+            document.getElementById('scheduleCardModal').classList.add('hidden');
+        };
+
+        // บันทึกฟอร์มลง Firebase
         window.submitForm = async function(e) {
             e.preventDefault();
 
             const btn = document.getElementById('submitBtn');
-            const originalBtnContent = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> กำลังบันทึกข้อมูล...`;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>กำลังบันทึกข้อมูล...</span>`;
             
             let profValue = document.getElementById('profession').value;
-            if(profValue === 'อื่นๆ') profValue = document.getElementById('professionOther').value;
+            if (profValue === 'อื่นๆ') profValue = document.getElementById('professionOther').value;
 
             const data = {
-                fullName: document.getElementById('fullName').value,
+                fullName: document.getElementById('fullName').value.trim(),
                 profession: profValue,
-                department: document.getElementById('department').value,
-                phone: document.getElementById('phone').value,
+                department: document.getElementById('department').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
                 kidney: getCheckedValues('kidney'),
                 organ: getCheckedValues('organ'),
                 heart: getCheckedValues('heart'),
@@ -466,49 +800,52 @@
 
             try {
                 const colRef = collection(db, 'ttls_registrations');
-                if(!editId) {
+                if (!editId) {
                     await addDoc(colRef, data);
-                    showModal('ลงทะเบียนสำเร็จ!', 'ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว<br><span class="text-xs text-slate-500 mt-2 block">หากต้องการตรวจสอบหรือแก้ไขข้อมูล สามารถกดที่แท็บ <b>"ตรวจสอบการลงทะเบียน"</b> ด้านบนได้ตลอดเวลา</span>', 'success');
+                    window.openScheduleCardModal(data, true);
                 } else {
                     const docRef = doc(db, 'ttls_registrations', editId);
                     await updateDoc(docRef, data);
-                    showModal('อัปเดตสำเร็จ!', 'บันทึกการแก้ไขข้อมูลเรียบร้อยแล้ว', 'success');
+                    window.showModal('อัปเดตสำเร็จ!', 'บันทึกการแก้ไขข้อมูลเรียบร้อยแล้วค่ะ', 'success');
                 }
                 resetForm();
             } catch (err) {
                 console.error("Save Error:", err);
-                showModal('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง: ' + err.message, 'error');
+                window.showModal('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง: ' + err.message, 'error');
             } finally {
                 btn.disabled = false;
-                const btnTextEl = document.getElementById('submitBtnText');
-                if (btnTextEl) btnTextEl.innerText = 'ยืนยันการลงทะเบียน';
-                else btn.innerHTML = originalBtnContent;
+                btn.innerHTML = `<span id="submitBtnText">ยืนยันการลงทะเบียน</span><span>✓</span>`;
             }
-        }
+        };
 
         function resetForm() {
             document.getElementById('registrationForm').reset();
             document.getElementById('professionOther').classList.add('hidden');
             document.getElementById('editModeBanner').classList.add('hidden');
-            const btnTextEl = document.getElementById('submitBtnText');
-            if (btnTextEl) btnTextEl.innerText = 'ยืนยันการลงทะเบียน';
+            document.querySelectorAll('.gcal-slot').forEach(slot => {
+                slot.classList.add('hidden');
+                slot.innerHTML = '';
+            });
             editId = null;
+            window.updateLiveScheduleCard();
         }
 
         window.cancelEdit = function() {
             resetForm();
-            showModal('ยกเลิกการแก้ไข', 'กลับสู่โหมดลงทะเบียนใหม่เรียบร้อยแล้ว', 'info');
-        }
+            window.showToast('ยกเลิกการแก้ไข กลับสู่โหมดลงทะเบียนใหม่แล้วค่ะ');
+        };
 
-        window.renderTable = function() {
+        // แสดงรายชื่อทั้งแบบ Mobile Cards และ Desktop Table
+        window.renderRegistrations = function() {
+            const mobileContainer = document.getElementById('mobileCardsContainer');
             const tbody = document.getElementById('tableBody');
             const emptyState = document.getElementById('emptyState');
             const searchInput = document.getElementById('searchInput');
             const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
             
+            mobileContainer.innerHTML = '';
             tbody.innerHTML = '';
             
-            // กรองข้อมูลตามคำค้นหา
             const filteredData = registrations.filter(reg => {
                 if (!keyword) return true;
                 return (reg.fullName && reg.fullName.toLowerCase().includes(keyword)) ||
@@ -518,48 +855,108 @@
             });
             
             if (filteredData.length === 0) {
-                emptyState.innerHTML = keyword ? `ไม่พบรายชื่อที่ตรงกับ "${searchInput.value}"` : "ยังไม่มีข้อมูลผู้ลงทะเบียนในระบบ";
+                emptyState.innerHTML = `<span class="text-sm">${keyword ? `ไม่พบรายชื่อที่ตรงกับ "${searchInput.value}"` : 'ยังไม่มีข้อมูลผู้ลงทะเบียนในระบบ'}</span>`;
                 emptyState.style.display = 'flex';
-            } else {
-                emptyState.style.display = 'none';
-                filteredData.forEach((reg) => {
-                    const row = `<tr class="hover:bg-slate-50 transition duration-150 group">
-                        <td class="px-5 py-4 font-medium text-slate-800">${reg.fullName}</td>
-                        <td class="px-5 py-4 text-slate-700">${reg.profession}</td>
-                        <td class="px-5 py-4 text-slate-700">${reg.department}</td>
-                        <td class="px-5 py-4 text-slate-700">${reg.phone}</td>
-                        <td class="px-5 py-4 text-cyan-600 text-sm whitespace-normal min-w-[150px]">${reg.kidney}</td>
-                        <td class="px-5 py-4 text-pink-600 text-sm whitespace-normal min-w-[150px]">${reg.organ}</td>
-                        <td class="px-5 py-4 text-emerald-600 text-sm whitespace-normal min-w-[150px]">${reg.heart}</td>
-                        <td class="px-4 py-3 text-center sticky right-0 bg-white/95 group-hover:bg-slate-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.06)] z-10">
-                            <div class="inline-flex items-center gap-2">
-                                <button onclick="window.editData('${reg.id}')" class="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95" title="แก้ไขข้อมูล">
-                                    <span>✏️</span>
-                                    <span>แก้ไข</span>
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            filteredData.forEach((reg) => {
+                // 1. Mobile Card View (เรียงแนวตั้ง อ่านง่าย กดง่ายบนมือถือ)
+                const mobileCard = `
+                    <div class="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">${reg.fullName}</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">${reg.profession} • ${reg.department}</p>
+                            </div>
+                            <span class="text-xs font-semibold bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg shrink-0">
+                                📞 ${reg.phone}
+                            </span>
+                        </div>
+
+                        <div class="space-y-1.5 text-xs bg-white rounded-xl p-3 border border-slate-100">
+                            <div class="flex justify-between gap-2">
+                                <span class="font-bold text-sky-700 shrink-0">Kidney:</span>
+                                <span class="text-slate-700 text-right">${reg.kidney || '-'}</span>
+                            </div>
+                            <div class="flex justify-between gap-2 border-t border-slate-50 pt-1.5">
+                                <span class="font-bold text-pink-700 shrink-0">Organ Donor:</span>
+                                <span class="text-slate-700 text-right">${reg.organ || '-'}</span>
+                            </div>
+                            <div class="flex justify-between gap-2 border-t border-slate-50 pt-1.5">
+                                <span class="font-bold text-emerald-700 shrink-0">Heart:</span>
+                                <span class="text-slate-700 text-right">${reg.heart || '-'}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 pt-1">
+                            <button onclick="window.viewScheduleById('${reg.id}')" class="col-span-3 sm:col-span-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs">
+                                <span>🗓️</span>
+                                <span>Schedule Card</span>
+                            </button>
+                            <button onclick="window.editData('${reg.id}')" class="col-span-2 sm:col-span-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-semibold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1">
+                                <span>✏️</span>
+                                <span>แก้ไขข้อมูล</span>
+                            </button>
+                            <button onclick="window.confirmDelete('${reg.id}')" class="col-span-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1">
+                                <span>🗑️</span>
+                                <span>ลบ</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                mobileContainer.innerHTML += mobileCard;
+
+                // 2. Desktop Table Row
+                const row = `
+                    <tr class="hover:bg-slate-50/90 transition duration-150 group">
+                        <td class="px-4 py-3.5 font-semibold text-slate-900">${reg.fullName}</td>
+                        <td class="px-4 py-3.5 text-slate-700">${reg.profession}</td>
+                        <td class="px-4 py-3.5 text-slate-700">${reg.department}</td>
+                        <td class="px-4 py-3.5 text-slate-700">${reg.phone}</td>
+                        <td class="px-4 py-3.5 text-sky-700 text-xs whitespace-normal min-w-[140px]">${reg.kidney}</td>
+                        <td class="px-4 py-3.5 text-pink-700 text-xs whitespace-normal min-w-[140px]">${reg.organ}</td>
+                        <td class="px-4 py-3.5 text-emerald-700 text-xs whitespace-normal min-w-[140px]">${reg.heart}</td>
+                        <td class="px-4 py-3 text-center sticky right-0 bg-white group-hover:bg-slate-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]">
+                            <div class="inline-flex items-center gap-1.5">
+                                <button onclick="window.viewScheduleById('${reg.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all">
+                                    🗓️ Schedule Card
                                 </button>
-                                <button onclick="window.confirmDelete('${reg.id}')" class="inline-flex items-center gap-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95" title="ลบข้อมูล">
-                                    <span>🗑️</span>
-                                    <span class="hidden sm:inline">ลบ</span>
+                                <button onclick="window.editData('${reg.id}')" class="bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all">
+                                    ✏️ แก้ไข
+                                </button>
+                                <button onclick="window.confirmDelete('${reg.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2 py-1.5 rounded-lg text-xs font-semibold transition-all">
+                                    🗑️
                                 </button>
                             </div>
                         </td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-            }
-        }
-        const renderTable = window.renderTable;
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        };
 
-        function restoreCheckboxes(name, valueString) {
+        window.viewScheduleById = function(id) {
+            const person = registrations.find(r => r.id === id);
+            if (person) {
+                window.openScheduleCardModal(person, false);
+            }
+        };
+
+        function restoreCheckboxes(name, topicTitle, valueString) {
             const values = valueString && valueString !== '-' ? valueString.split(', ') : [];
             document.querySelectorAll(`input[name="${name}"]`).forEach(cb => {
                 cb.checked = values.includes(cb.value);
+                window.handleDateToggle(cb, topicTitle);
             });
         }
 
         window.editData = function(id) {
             editId = id;
             const data = registrations.find(r => r.id === id);
+            if (!data) return;
             
             document.getElementById('fullName').value = data.fullName;
             document.getElementById('department').value = data.department;
@@ -567,7 +964,7 @@
             
             const profSelect = document.getElementById('profession');
             const options = Array.from(profSelect.options).map(opt => opt.value);
-            if(options.includes(data.profession)) {
+            if (options.includes(data.profession)) {
                 profSelect.value = data.profession;
                 window.toggleOtherProfession();
             } else {
@@ -576,44 +973,44 @@
                 document.getElementById('professionOther').value = data.profession;
             }
 
-            restoreCheckboxes('kidney', data.kidney);
-            restoreCheckboxes('organ', data.organ);
-            restoreCheckboxes('heart', data.heart);
+            restoreCheckboxes('kidney', 'Kidney Transplant', data.kidney);
+            restoreCheckboxes('organ', 'Organ Donor', data.organ);
+            restoreCheckboxes('heart', 'Heart Transplant', data.heart);
 
-            // แสดงแถบแจ้งเตือนโหมดแก้ไขบนฟอร์ม
             document.getElementById('editingUserName').innerText = data.fullName;
             document.getElementById('editModeBanner').classList.remove('hidden');
             const btnTextEl = document.getElementById('submitBtnText');
             if (btnTextEl) btnTextEl.innerText = 'บันทึกการแก้ไขข้อมูล';
 
+            window.updateLiveScheduleCard();
             window.switchTab('register');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            showModal('โหมดแก้ไขข้อมูล', 'ดึงข้อมูลมาที่ฟอร์มเรียบร้อยแล้ว<br>สามารถแก้ไขและกด <b>"บันทึกการแก้ไขข้อมูล"</b> ได้เลย', 'info');
-        }
+            window.showToast('ดึงข้อมูลมาที่ฟอร์มแล้ว แก้ไขได้เลยค่ะ');
+        };
 
-        let deleteTargetId = null;
         window.confirmDelete = function(id) {
             deleteTargetId = id;
-            showModal('ยืนยันการลบข้อมูล', 'คุณต้องการลบข้อมูลรายชื่อนี้ใช่หรือไม่?<br><span class="text-rose-500">คำเตือน: ข้อมูลจะถูกลบอย่างถาวร</span>', 'warning', true);
-        }
+            window.showModal('ยืนยันการลบข้อมูล', 'คุณต้องการลบข้อมูลรายชื่อนี้ใช่หรือไม่?<br><span class="text-rose-500 text-xs">คำเตือน: ข้อมูลจะถูกลบอย่างถาวร</span>', 'warning', true);
+        };
 
         window.executeDelete = async function() {
-            if(deleteTargetId) {
+            if (deleteTargetId) {
                 try {
                     const docRef = doc(db, 'ttls_registrations', deleteTargetId);
                     await deleteDoc(docRef);
                     window.closeModal();
+                    window.showToast('ลบข้อมูลเรียบร้อยแล้วค่ะ');
                 } catch (err) {
                     console.error("Delete Error:", err);
-                    showModal('ผิดพลาด', 'ไม่สามารถลบข้อมูลได้', 'error');
+                    window.showModal('ผิดพลาด', 'ไม่สามารถลบข้อมูลได้', 'error');
                 }
                 deleteTargetId = null;
             }
-        }
+        };
 
         window.exportToExcel = function() {
             if (registrations.length === 0) {
-                showModal('แจ้งเตือน', 'ยังไม่มีข้อมูลสำหรับ Export', 'warning');
+                window.showModal('แจ้งเตือน', 'ยังไม่มีข้อมูลสำหรับ Export', 'warning');
                 return;
             }
             const cleanData = registrations.map(r => ({
@@ -630,21 +1027,20 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "รายชื่อผู้ลงทะเบียน");
             XLSX.writeFile(wb, "ผู้ลงทะเบียน_Transplant.xlsx");
-        }
+        };
 
         window.switchTab = function(tabName) {
             document.getElementById('view-register').classList.add('hidden');
             document.getElementById('view-admin').classList.add('hidden');
             
-            const inactiveClass = 'py-3 sm:py-4 px-2 sm:px-4 tab-inactive text-base sm:text-lg flex items-center transition-all whitespace-nowrap';
-            const activeClass = 'py-3 sm:py-4 px-2 sm:px-4 tab-active text-base sm:text-lg flex items-center transition-all whitespace-nowrap';
+            const activeTabClass = 'py-2.5 px-3 rounded-xl text-sm font-bold bg-white text-slate-900 shadow-sm transition-all flex items-center justify-center gap-1.5';
+            const inactiveTabClass = 'py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-800 transition-all flex items-center justify-center gap-1.5';
             
-            document.getElementById('tab-register').className = inactiveClass;
-            document.getElementById('tab-admin').className = inactiveClass;
+            document.getElementById('tab-register').className = tabName === 'register' ? activeTabClass : inactiveTabClass;
+            document.getElementById('tab-admin').className = tabName === 'admin' ? activeTabClass : inactiveTabClass;
             
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabName}`).className = activeClass;
-        }
+        };
 
         window.showModal = function(title, message, type = 'success', isConfirm = false) {
             document.getElementById('modalTitle').innerText = title;
@@ -656,26 +1052,22 @@
             const confirmBtn = document.getElementById('modalConfirmBtn');
             const cancelBtn = document.getElementById('modalCancelBtn');
 
-            if(type === 'success') {
-                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]">✅</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-emerald-100 border border-emerald-300 mb-5 shadow-sm';
-                confirmBtn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
+            if (type === 'success') {
+                iconDiv.innerHTML = '<span class="text-3xl">✅</span>';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-emerald-100 mb-4';
+                confirmBtn.className = 'flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-6 rounded-2xl transition';
             } else if (type === 'warning') {
-                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]">⚠️</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-amber-100 border border-amber-300 mb-5 shadow-sm';
-                confirmBtn.className = 'bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
-                confirmBtn.innerText = 'ยืนยันลบข้อมูล';
-            } else if (type === 'info') {
-                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(14,165,233,0.6)]">ℹ️</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-cyan-100 border border-cyan-300 mb-5 shadow-sm';
-                confirmBtn.className = 'bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
+                iconDiv.innerHTML = '<span class="text-3xl">⚠️</span>';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-amber-100 mb-4';
+                confirmBtn.className = 'flex-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-3 px-6 rounded-2xl transition';
+                confirmBtn.innerText = 'ยืนยันลบ';
             } else {
-                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">❌</span>';
-                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-rose-100 border border-rose-300 mb-5 shadow-sm';
-                confirmBtn.className = 'bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
+                iconDiv.innerHTML = '<span class="text-3xl">❌</span>';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-rose-100 mb-4';
+                confirmBtn.className = 'flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded-2xl transition';
             }
 
-            if(isConfirm) {
+            if (isConfirm) {
                 cancelBtn.classList.remove('hidden');
                 confirmBtn.onclick = window.executeDelete;
             } else {
@@ -689,7 +1081,7 @@
                 modalContent.classList.remove('scale-95', 'opacity-0');
                 modalContent.classList.add('scale-100', 'opacity-100');
             }, 10);
-        }
+        };
 
         window.closeModal = function() {
             const modal = document.getElementById('customModal');
@@ -701,8 +1093,17 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
                 deleteTargetId = null;
-            }, 200); 
-        }
+            }, 200);
+        };
+
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2600);
+        };
     </script>
 </body>
 </html>
