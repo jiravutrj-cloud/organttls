@@ -146,6 +146,17 @@
 
             <form id="registrationForm" onsubmit="window.submitForm(event)">
                 
+                <!-- แถบแจ้งเตือนเมื่ออยู่ในโหมดแก้ไขข้อมูล -->
+                <div id="editModeBanner" class="hidden mb-6 bg-amber-50 border-l-4 border-amber-500 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                    <div class="flex items-center text-amber-800 text-sm sm:text-base">
+                        <span class="text-xl mr-2.5">✏️</span>
+                        <span>กำลังแก้ไขข้อมูลของ: <strong id="editingUserName" class="underline"></strong></span>
+                    </div>
+                    <button type="button" onclick="window.cancelEdit()" class="self-end sm:self-auto bg-white hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                        ยกเลิกการแก้ไข
+                    </button>
+                </div>
+
                 <!-- ข้อมูลส่วนบุคคล -->
                 <div class="mb-10">
                     <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 flex items-center border-b border-slate-100 pb-3">
@@ -266,7 +277,7 @@
                 <div class="text-center mt-8 sm:mt-12 relative group block w-full">
                     <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500 group-hover:duration-200 w-full md:w-2/3 mx-auto"></div>
                     <button type="submit" class="relative bg-gradient-to-r from-cyan-600 to-blue-600 border border-transparent text-white font-bold py-4 sm:py-4 px-6 sm:px-12 rounded-full shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] text-lg w-full md:w-2/3 mx-auto flex items-center justify-center space-x-2" id="submitBtn">
-                        <span>ยืนยันการลงทะเบียน</span>
+                        <span id="submitBtnText">ยืนยันการลงทะเบียน</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/80" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                         </svg>
@@ -277,18 +288,18 @@
         
         <!-- ตัวบอกเวอร์ชัน (เอาไว้ตรวจสอบว่าโหลด Cache ใหม่หรือยัง) -->
         <div class="text-center text-xs text-slate-400 mt-6 mb-2">
-            เวอร์ชัน 3.1 (อัปเดตตารางวันอบรมล่าสุด)
+            เวอร์ชัน 3.2 (เพิ่มระบบค้นหาและปุ่มแก้ไขที่ชัดเจนขึ้น)
         </div>
     </div>
 
-    <!-- ส่วนที่ 2: หน้าแอดมิน -->
+    <!-- ส่วนที่ 2: หน้าแอดมิน / ตรวจสอบการลงทะเบียน -->
     <div id="view-admin" class="max-w-7xl mx-auto px-3 sm:px-4 pb-12 hidden relative z-10">
         <div class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4">
                 <div>
                     <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1 flex items-center">
                         <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse mr-2 sm:mr-3 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
-                        ระบบจัดการฐานข้อมูล
+                        ตรวจสอบรายชื่อและจัดการข้อมูล
                     </h2>
                     <p class="text-slate-500 text-xs sm:text-sm ml-5 sm:ml-6">อัปเดตอัตโนมัติแบบ Real-time</p>
                 </div>
@@ -299,18 +310,35 @@
                 </button>
             </div>
 
-            <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 shadow-sm">
+            <!-- กล่องคำแนะนำ + ช่องค้นหารายชื่อ -->
+            <div class="mb-6 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-cyan-50/80 border border-cyan-200 rounded-2xl p-4">
+                <div class="flex items-start sm:items-center gap-3 text-cyan-900 text-xs sm:text-sm">
+                    <span class="text-xl bg-white p-2 rounded-xl shadow-sm border border-cyan-100 shrink-0">💡</span>
+                    <div>
+                        <p class="font-bold text-cyan-800">ลงทะเบียนผิดพลาด หรือต้องการเปลี่ยนวันเข้าร่วม?</p>
+                        <p class="text-cyan-700 mt-0.5">สามารถค้นหารายชื่อของท่าน แล้วกดปุ่ม <span class="inline-block bg-blue-100 text-blue-700 font-semibold px-2 py-0.5 rounded border border-blue-200">✏️ แก้ไข</span> ทางด้านขวาของตารางได้ทันที</p>
+                    </div>
+                </div>
+                
+                <!-- ช่องค้นหา -->
+                <div class="relative w-full lg:w-72 shrink-0">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">🔍</span>
+                    <input type="text" id="searchInput" oninput="window.renderTable()" placeholder="ค้นหาชื่อ, หน่วยงาน, เบอร์โทร..." class="w-full bg-white border border-cyan-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white/90 shadow-sm relative">
                 <table class="min-w-full text-left text-sm whitespace-nowrap">
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
                         <tr>
-                            <th class="px-6 py-5 font-semibold">ชื่อ-นามสกุล</th>
-                            <th class="px-6 py-5 font-semibold">ตำแหน่ง</th>
-                            <th class="px-6 py-5 font-semibold">หน่วยงาน</th>
-                            <th class="px-6 py-5 font-semibold">เบอร์โทรศัพท์</th>
-                            <th class="px-6 py-5 font-semibold text-cyan-600">Kidney</th>
-                            <th class="px-6 py-5 font-semibold text-pink-600">Organ Donor</th>
-                            <th class="px-6 py-5 font-semibold text-emerald-600">Heart</th>
-                            <th class="px-6 py-5 font-semibold text-center">จัดการ</th>
+                            <th class="px-5 py-4 font-semibold">ชื่อ-นามสกุล</th>
+                            <th class="px-5 py-4 font-semibold">ตำแหน่ง</th>
+                            <th class="px-5 py-4 font-semibold">หน่วยงาน</th>
+                            <th class="px-5 py-4 font-semibold">เบอร์โทรศัพท์</th>
+                            <th class="px-5 py-4 font-semibold text-cyan-600">Kidney</th>
+                            <th class="px-5 py-4 font-semibold text-pink-600">Organ Donor</th>
+                            <th class="px-5 py-4 font-semibold text-emerald-600">Heart</th>
+                            <th class="px-5 py-4 font-semibold text-center sticky right-0 bg-slate-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.06)] z-10">จัดการข้อมูล</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100">
@@ -440,11 +468,11 @@
                 const colRef = collection(db, 'ttls_registrations');
                 if(!editId) {
                     await addDoc(colRef, data);
-                    showModal('ลงทะเบียนสำเร็จ!', 'ข้อมูลของคุณถูกบันทึกเข้าสู่ระบบ Cloud เรียบร้อยแล้ว', 'success');
+                    showModal('ลงทะเบียนสำเร็จ!', 'ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว<br><span class="text-xs text-slate-500 mt-2 block">หากต้องการตรวจสอบหรือแก้ไขข้อมูล สามารถกดที่แท็บ <b>"ตรวจสอบการลงทะเบียน"</b> ด้านบนได้ตลอดเวลา</span>', 'success');
                 } else {
                     const docRef = doc(db, 'ttls_registrations', editId);
                     await updateDoc(docRef, data);
-                    showModal('อัปเดตสำเร็จ!', 'แก้ไขข้อมูลเรียบร้อยแล้ว', 'success');
+                    showModal('อัปเดตสำเร็จ!', 'บันทึกการแก้ไขข้อมูลเรียบร้อยแล้ว', 'success');
                 }
                 resetForm();
             } catch (err) {
@@ -452,48 +480,75 @@
                 showModal('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง: ' + err.message, 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = originalBtnContent;
+                const btnTextEl = document.getElementById('submitBtnText');
+                if (btnTextEl) btnTextEl.innerText = 'ยืนยันการลงทะเบียน';
+                else btn.innerHTML = originalBtnContent;
             }
         }
 
         function resetForm() {
             document.getElementById('registrationForm').reset();
             document.getElementById('professionOther').classList.add('hidden');
+            document.getElementById('editModeBanner').classList.add('hidden');
+            const btnTextEl = document.getElementById('submitBtnText');
+            if (btnTextEl) btnTextEl.innerText = 'ยืนยันการลงทะเบียน';
             editId = null;
         }
 
-        function renderTable() {
+        window.cancelEdit = function() {
+            resetForm();
+            showModal('ยกเลิกการแก้ไข', 'กลับสู่โหมดลงทะเบียนใหม่เรียบร้อยแล้ว', 'info');
+        }
+
+        window.renderTable = function() {
             const tbody = document.getElementById('tableBody');
             const emptyState = document.getElementById('emptyState');
+            const searchInput = document.getElementById('searchInput');
+            const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            
             tbody.innerHTML = '';
             
-            if (registrations.length === 0) {
-                emptyState.innerHTML = "ยังไม่มีข้อมูลผู้ลงทะเบียนในระบบ";
+            // กรองข้อมูลตามคำค้นหา
+            const filteredData = registrations.filter(reg => {
+                if (!keyword) return true;
+                return (reg.fullName && reg.fullName.toLowerCase().includes(keyword)) ||
+                       (reg.department && reg.department.toLowerCase().includes(keyword)) ||
+                       (reg.profession && reg.profession.toLowerCase().includes(keyword)) ||
+                       (reg.phone && reg.phone.toLowerCase().includes(keyword));
+            });
+            
+            if (filteredData.length === 0) {
+                emptyState.innerHTML = keyword ? `ไม่พบรายชื่อที่ตรงกับ "${searchInput.value}"` : "ยังไม่มีข้อมูลผู้ลงทะเบียนในระบบ";
                 emptyState.style.display = 'flex';
             } else {
                 emptyState.style.display = 'none';
-                registrations.forEach((reg) => {
+                filteredData.forEach((reg) => {
                     const row = `<tr class="hover:bg-slate-50 transition duration-150 group">
-                        <td class="px-6 py-4 font-medium text-slate-800">${reg.fullName}</td>
-                        <td class="px-6 py-4 text-slate-700">${reg.profession}</td>
-                        <td class="px-6 py-4 text-slate-700">${reg.department}</td>
-                        <td class="px-6 py-4 text-slate-700">${reg.phone}</td>
-                        <td class="px-6 py-4 text-cyan-600 text-sm whitespace-normal min-w-[150px]">${reg.kidney}</td>
-                        <td class="px-6 py-4 text-pink-600 text-sm whitespace-normal min-w-[150px]">${reg.organ}</td>
-                        <td class="px-6 py-4 text-emerald-600 text-sm whitespace-normal min-w-[150px]">${reg.heart}</td>
-                        <td class="px-6 py-4 text-center opacity-70 group-hover:opacity-100 transition-opacity">
-                            <button onclick="window.editData('${reg.id}')" class="text-blue-500 hover:text-blue-600 hover:scale-110 transition-transform mx-2" title="แก้ไข">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                            </button>
-                            <button onclick="window.confirmDelete('${reg.id}')" class="text-rose-500 hover:text-rose-600 hover:scale-110 transition-transform mx-2" title="ลบ">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            </button>
+                        <td class="px-5 py-4 font-medium text-slate-800">${reg.fullName}</td>
+                        <td class="px-5 py-4 text-slate-700">${reg.profession}</td>
+                        <td class="px-5 py-4 text-slate-700">${reg.department}</td>
+                        <td class="px-5 py-4 text-slate-700">${reg.phone}</td>
+                        <td class="px-5 py-4 text-cyan-600 text-sm whitespace-normal min-w-[150px]">${reg.kidney}</td>
+                        <td class="px-5 py-4 text-pink-600 text-sm whitespace-normal min-w-[150px]">${reg.organ}</td>
+                        <td class="px-5 py-4 text-emerald-600 text-sm whitespace-normal min-w-[150px]">${reg.heart}</td>
+                        <td class="px-4 py-3 text-center sticky right-0 bg-white/95 group-hover:bg-slate-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.06)] z-10">
+                            <div class="inline-flex items-center gap-2">
+                                <button onclick="window.editData('${reg.id}')" class="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95" title="แก้ไขข้อมูล">
+                                    <span>✏️</span>
+                                    <span>แก้ไข</span>
+                                </button>
+                                <button onclick="window.confirmDelete('${reg.id}')" class="inline-flex items-center gap-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95" title="ลบข้อมูล">
+                                    <span>🗑️</span>
+                                    <span class="hidden sm:inline">ลบ</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>`;
                     tbody.innerHTML += row;
                 });
             }
         }
+        const renderTable = window.renderTable;
 
         function restoreCheckboxes(name, valueString) {
             const values = valueString && valueString !== '-' ? valueString.split(', ') : [];
@@ -525,8 +580,15 @@
             restoreCheckboxes('organ', data.organ);
             restoreCheckboxes('heart', data.heart);
 
+            // แสดงแถบแจ้งเตือนโหมดแก้ไขบนฟอร์ม
+            document.getElementById('editingUserName').innerText = data.fullName;
+            document.getElementById('editModeBanner').classList.remove('hidden');
+            const btnTextEl = document.getElementById('submitBtnText');
+            if (btnTextEl) btnTextEl.innerText = 'บันทึกการแก้ไขข้อมูล';
+
             window.switchTab('register');
-            showModal('โหมดแก้ไขข้อมูล', 'ดึงข้อมูลมาที่ฟอร์มเรียบร้อยแล้ว<br>สามารถแก้ไขและกดยืนยันได้เลย', 'info');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showModal('โหมดแก้ไขข้อมูล', 'ดึงข้อมูลมาที่ฟอร์มเรียบร้อยแล้ว<br>สามารถแก้ไขและกด <b>"บันทึกการแก้ไขข้อมูล"</b> ได้เลย', 'info');
         }
 
         let deleteTargetId = null;
@@ -603,6 +665,10 @@
                 iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-amber-100 border border-amber-300 mb-5 shadow-sm';
                 confirmBtn.className = 'bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
                 confirmBtn.innerText = 'ยืนยันลบข้อมูล';
+            } else if (type === 'info') {
+                iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(14,165,233,0.6)]">ℹ️</span>';
+                iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-cyan-100 border border-cyan-300 mb-5 shadow-sm';
+                confirmBtn.className = 'bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 px-8 rounded-xl shadow-sm transition duration-200';
             } else {
                 iconDiv.innerHTML = '<span class="text-4xl drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">❌</span>';
                 iconDiv.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-2xl bg-rose-100 border border-rose-300 mb-5 shadow-sm';
